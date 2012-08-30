@@ -7,7 +7,7 @@
 	<authorUrl>http://www.contentlead.com</authorUrl>
 	<copyright>Copyright 2012</copyright>
 	<license>GPL</license>
-	<version>0.1</version>
+	<version>0.2</version>
 	<description>Imports articles from Brafton/ContentLEAD/Castleford XML feeds</description>
  
 	<install> <!-- Runs on install -->
@@ -35,7 +35,7 @@
 	</files>
  
 	<administration>
-		<menu>Hello World!</menu>
+		<menu>Brafton Article Importer</menu>
 		<files folder="admin">
 			<filename>index.html</filename>
 			<filename>braftonarticles.php</filename>
