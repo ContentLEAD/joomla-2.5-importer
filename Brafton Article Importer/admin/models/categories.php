@@ -39,6 +39,10 @@ class BraftonArticlesModelCategories extends JModelList
 		parent::__construct();
 	} // end constructor
 	
+	// The client may have to run "Rebuild Categories" after the fact.  Doing this sets the lft and rgt settings
+	// Using the "Rebuild Categories" function is probably a LOT safer then me fumbling around trying to fix it myself
+	
+	// getCategories gets the categories from the XML feed and set it in the database.
 	public function getCategories() {
 	
 		$categoryList = $this->feed->getCategoryDefinitions();
@@ -53,8 +57,16 @@ class BraftonArticlesModelCategories extends JModelList
 			if(!$this->category_exists($category, $brCategoryRow)) {
 				
 				// First set the category in...
-				$categoryData['id'] = null;
-				$categoryData['title'] = $category->getName();
+				// There's a lot of Joomla specific stuff here.
+				// There may be a way to establish this stuff using the JTable instance
+				$categoryData['id'] = null;		// primary key, must be null to auto_increment
+				$categoryData['title'] = $category->getName();	// the title, aka category name
+				$categoryData['alias'] = str_replace(" ", "-", strtolower($category->getName()));	// the alias is the title lowercased and spaces replaces with hyphens
+				$categoryData['path'] = $categoryData['alias']; // path is the same as the alias
+				$categoryData['parent_id'] = 1; 	// default to root parent
+				$categoryData['extension'] = 'com_content'; // yes this is correct, the articles are being pushed into com_content
+				$categoryData['published'] = 1; // auto published category, may make an option at a later date
+				$categoryData['language'] = '*';
 				$categoryRow->save($categoryData);
 				
 				// Then associate the brafton categories with the ones inserted
@@ -65,18 +77,23 @@ class BraftonArticlesModelCategories extends JModelList
 				$brCategoryData['cat_id'] = $categoryRow->id;
 				$brCategoryData['brafton_cat_id'] = (int) $category->getId();
 				$brCategoryRow->save($brCategoryData);
-			}
-		}
-	}
+			} // end if category exists
+		} //end foreach
+	} //end getCategories
 	
 	/*
 	*	$category - a NewsCategory item
 	*	$row - connection to brafton_categories table
 	*/
-	private function category_exists($category, $row) {
+	private function category_exists($category, $brCategoryRow) {
 
 		$brCategoryID = $category->getId();
 		$keys['brafton_cat_id'] = $brCategoryID;
-		$row->load($keys);
-	}
-}
+		$brCategoryRow->load($keys);
+		// If the row returns a key and not null, we know it exists.  Otherwise, it doesn't so it's safe to add
+		if(!empty($brCategoryRow->brafton_cat_id))
+			return true;
+		else
+			return false;
+	} // end category_exists
+} // end class

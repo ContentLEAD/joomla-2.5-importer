@@ -14,6 +14,7 @@ class BraftonArticlesModelArticles extends JModelList
 
 	// Variable for feed
 	protected $feed;
+	protected $options;
 	
 	/*
 	*	Default constructor - Sets the feed handler from the options
@@ -26,19 +27,19 @@ class BraftonArticlesModelArticles extends JModelList
 		// even though you can call it without the include further down.  Possible Joomla bug?
 		// EXPLORE FURTHER
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables');
-		$options = $this->getTable('braftonoptions');
+		$this->options = $this->getTable('braftonoptions');
 		
 		// Load the API Key from the options
-		$options->load('api-key');
-		$API_Key = $options->value;
+		$this->options->load('api-key');
+		$API_Key = $this->options->value;
 		
 		// Load the base URL from the options
-		$options->load('base-url');
-		$API_BaseURL = $options->value;
+		$this->options->load('base-url');
+		$API_BaseURL = $this->options->value;
 		
 		// Get a new feed handler
 		$this->feed = new ApiHandler($API_Key, $API_BaseURL);
-		
+
 		parent::__construct();
 	} // end constructor
 	
@@ -47,57 +48,58 @@ class BraftonArticlesModelArticles extends JModelList
 		$newsList = $this->feed->getNewsHTML(); //return an array of your latest news items with HTML encoding text. Note this is still raw data.
 		
 		foreach ($newsList as $article) {
-			$row = $this->getTable('content');
-			/*$brafton_id = $article->getId();
-			$row_array = $this->initArray($brafton_id);*/
-			$post_array['id'] = null;
-			/*$test = $article->getCategories();
-			$test = $test[0]->getID();
-			*/
-			$post_array['title'] = $article->getTitle();
-			$post_array['fulltext'] = $article->getText();
-			$row->save($post_array);
+		
+			$contentRow = $this->getTable('content');
+			$brContentRow = $this->getTable('braftoncontent');
+			$brCategoryRow = $this->getTable('braftoncategories');
+			if(!$this->article_exists($article, $brContentRow)) {
+				$articleData['id'] = null;	// primary key, must be null to auto increment
+				$articleData['title'] = $article->getHeadline();	// Title of the article
+				$articleData['alias'] = str_replace("'", "", str_replace(" ", "-", strtolower($article->getHeadline())));	// the alias is the title lowercased and spaces replaces with hyphens
+				$articleData['fulltext'] = $article->getText();	// content of the article
+				$articleData['state'] = 1; 	// automatically published, will make an option later
+				$articleData['created'] = $article->getLastModifiedDate();	// modified date because this gets changed when the article is approved, so it'll actually post on the date that it's approved 
+				$articleData['publish_up'] = $articleData['created'];	// Same as created date, quicker to reference the variable
+				
+				// Grab the author from the options table
+				$this->options->load('author');
+				$articleData['created_by'] = $this->options->value;
+				
+				// Logic for setting the category
+				/*****************************************************************************************************/
+				$categories = $article->getCategories();	// Get the list of categories from the XML
+				$category = $categories[0];	// since Joomla can only hold one category, just grab the first one
+				$keys['brafton_cat_id'] = $category->getId();	// Set the keys to load the appropriate row
+				$brCategoryRow->load($keys);	// Load up the row
+				$articleData['catid'] = $brCategoryRow->cat_id;		// Set the category id according to the row it found
+				/*****************************************************************************************************/
+				
+				$articleData['language'] = '*';
+				
+				// save it!
+				$contentRow->save($articleData);
+				
+				// Then associate the brafton categories with the ones inserted
+				// Using the JTable class, cat_id can't be the primary key.  When trying to save(), it detects it as the primary
+				// and it assumes you're updating the row with that key, instead of adding a row.  A blank primary key is needed to insert.
+				$brContentData['id'] = null;
+				// Since $categoryRow now contains the data from the last insert, we can use this id to our advantage
+				$brContentData['article_id'] = $contentRow->id;
+				$brContentData['brafton_article_id'] = (int) $article->getId();
+				$brContentRow->save($brContentData);
+			} // end if article exists
 		}
 	} // end getArticles
 	
-	/*
-	*  Initializes array with default values
-	*  A form of fault tolerance - if an article doesn't have
-	*  a certain attribute on, it will default.
-	*/
-	private function initArray($brafton_id) {
-	
-		$row_array['id'] = null;
-		$row_array['title'] = 'Article #'.$brafton_id;
-		$row_array['alias'] = 'article-' . $brafton_id;
-		$row_array['introtext'] = null;
-		$row_array['fulltext'] = null;
-		$state = 1;		
-		$sectionid = 0;
-		$mask = null;
-		$catid = 2;
-		$created = null;
-		$created_by = null;
-		$created_by_alias = null;
-		$modified = null;
-		$checked_out = null;
-		$checked_out_time = null;
-		$published_up = null;
-		$published_down = null;
-		$images = null;
-		$urls = null;
-		$attribs = null;
-		$version = null;
-		$parentid = null;
-		$ordering = null;
-		$metakey = null;
-		$metadesc = null;
-		$access = null;
-		$hits = null;
-		$featured = null;
-		$language = null;
-		$xreference = null;
+	private function article_exists($article, $brContentRow) {
 		
-		return $row_array;
-	} // end initArray
+		$brContentID = $article->getId();
+		$keys['brafton_article_id'] = $brContentID;
+		$brContentRow->load($keys);
+		// If the row returns a key and not null, we know it exists.  Otherwise, it doesn't so it's safe to add
+		if(!empty($brContentRow->brafton_article_id))
+			return true;
+		else
+			return false;
+	}
 } // end class

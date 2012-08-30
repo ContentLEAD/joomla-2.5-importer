@@ -17,7 +17,7 @@ class BraftonArticlesViewBraftonArticles extends JView
 	function display($tpl = null) 
 	{	
 		$this->get('Categories', 'Categories');
-		//$this->get('Articles');
+		$this->get('Articles');
 		// Display the template
 		parent::display($tpl);
 	}
