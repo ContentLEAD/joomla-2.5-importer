@@ -6,14 +6,16 @@ CREATE TABLE `#__brafton_categories` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cat_id` int(11) NOT NULL,
   `brafton_cat_id` int(11) NOT NULL,
-   PRIMARY KEY  (`id`)
+   PRIMARY KEY  (`id`),
+   FOREIGN KEY (`cat_id`) REFERENCES #__categories(`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `#__brafton_content` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content_id` int(11) NOT NULL,
   `brafton_content_id` int(11) NOT NULL,
-   PRIMARY KEY  (`id`)
+   PRIMARY KEY  (`id`),
+   FOREIGN KEY (`content_id`) REFERENCES #__content(`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `#__brafton_options` (

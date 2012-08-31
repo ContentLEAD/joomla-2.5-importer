@@ -6,18 +6,17 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.view');
  
 /**
- * HelloWorlds View
+ * Options View
  */
 class BraftonArticlesViewOptions extends JView
 {
-	/**
-	 * HelloWorlds view display method
-	 * @return void
-	 */
 	function display($tpl = null) 
 	{
-		$test = this->get('Test');
-		// Display the template
+		JToolBarHelper::title('Brafton Article Importer','logo');
+		JToolBarHelper::apply('options.apply');
+		JToolBarHelper::save();
+		JToolBarHelper::cancel();
+		JHtml::stylesheet('com_braftonarticles/css/admin/style.css', 'media/');
 		parent::display($tpl);
 	}
 }

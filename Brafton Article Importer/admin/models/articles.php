@@ -94,10 +94,10 @@ class BraftonArticlesModelArticles extends JModelList
 	private function article_exists($article, $brContentRow) {
 		
 		$brContentID = $article->getId();
-		$keys['brafton_article_id'] = $brContentID;
+		$keys['brafton_content_id'] = $brContentID;
 		$brContentRow->load($keys);
 		// If the row returns a key and not null, we know it exists.  Otherwise, it doesn't so it's safe to add
-		if(!empty($brContentRow->brafton_article_id))
+		if(!empty($brContentRow->brafton_content_id))
 			return true;
 		else
 			return false;

@@ -40,6 +40,7 @@
 			<filename>index.html</filename>
 			<filename>braftonarticles.php</filename>
 			<filename>controller.php</filename>
+			<folder>controllers</folder>
 			<folder>sql</folder>
 			<folder>tables</folder>
 			<folder>models</folder>
