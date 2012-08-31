@@ -12,7 +12,7 @@ CREATE TABLE `#__brafton_categories` (
 
 CREATE TABLE `#__brafton_content` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `content_id` int(10) NOT NULL,
+  `content_id` int(10) UNSIGNED NOT NULL,
   `brafton_content_id` int(10) NOT NULL,
    PRIMARY KEY  (`id`),
    FOREIGN KEY (`content_id`) REFERENCES #__content(`id`) ON DELETE CASCADE ON UPDATE CASCADE
