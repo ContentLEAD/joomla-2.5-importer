@@ -84,8 +84,8 @@ class BraftonArticlesModelArticles extends JModelList
 				// and it assumes you're updating the row with that key, instead of adding a row.  A blank primary key is needed to insert.
 				$brContentData['id'] = null;
 				// Since $categoryRow now contains the data from the last insert, we can use this id to our advantage
-				$brContentData['article_id'] = $contentRow->id;
-				$brContentData['brafton_article_id'] = (int) $article->getId();
+				$brContentData['content_id'] = $contentRow->id;
+				$brContentData['brafton_content_id'] = (int) $article->getId();
 				$brContentRow->save($brContentData);
 			} // end if article exists
 		}

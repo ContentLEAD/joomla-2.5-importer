@@ -50,7 +50,7 @@
 	
 	<!-- UPDATESERVER DEFINITION -->
     <updateservers>
-		<server type="extension" priority="1" name="Article Importer Update Site">http://tech.contentlead.com/joomla/updates/2.5/importer-update.xml</server>
+		<server type="extension" priority="1" name="Article Importer Update Site">http://tech.contentlead.com/joomla/updates/2.5/update.xml</server>
     </updateservers>
 	
 </extension>
