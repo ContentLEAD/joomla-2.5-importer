@@ -24,4 +24,8 @@ class BraftonArticlesControllerOptions extends JControllerAdmin {
 		$model->setOptions();
 		$this->setRedirect('index.php?option=com_braftonarticles', $msg);
 	}
+	
+	function cancel() {
+		$this->setRedirect('index.php');
+	}
 }
