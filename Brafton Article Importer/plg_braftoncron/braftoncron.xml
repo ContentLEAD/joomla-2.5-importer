@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="system" method="upgrade">
+	<name>System - Brafton Cron Plugin</name>
+	<author>Mike Walton</author>
+	<creationDate>Aug 2012</creationDate>
+	<license>GPL 2.0</license>
+	<authorEmail></authorEmail>
+	<authorUrl>http://www.brafton.com</authorUrl>
+	<version>0.1</version>
+	<description>A pseudo cron event plugin that fires our article importer when a page is hit and what interval the cron is set at.  Based on the Feed Gator pseudo cron plugin</description>
+	<files>
+		<filename plugin="braftoncron">braftoncron.php</filename>
+	</files>
+	<params>
+		<param name="interval" type="text" default="5" label="Set Interval" description="Set cron interval in minutes" />
+	</params>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="interval" type="text" default="5" label="Set Interval" description="Set cron interval in minutes" />
+			</fieldset>
+		</fields>
+	</config>
+</install>

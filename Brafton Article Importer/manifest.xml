@@ -7,8 +7,9 @@
 	<authorUrl>http://www.contentlead.com</authorUrl>
 	<copyright>Copyright 2012</copyright>
 	<license>GPL</license>
-	<version>0.2</version>
+	<version>0.3</version>
 	<description>Imports articles from Brafton/ContentLEAD/Castleford XML feeds</description>
+	<scriptfile>com_braftonarticles.script.php</scriptfile>
  
 	<install> <!-- Runs on install -->
 		<sql>
@@ -53,5 +54,11 @@
     <updateservers>
 		<server type="extension" priority="1" name="Article Importer Update Site">http://tech.contentlead.com/joomla/updates/2.5/update.xml</server>
     </updateservers>
+	
+	<!-- Media folder for component, contains logos and stuff -->
+	<media destination="com_braftonarticles">
+		<folder>css</folder>
+		<folder>images</folder>
+	</media>
 	
 </extension>
