@@ -10,13 +10,17 @@ jimport('joomla.application.component.view');
  */
 class BraftonArticlesViewOptions extends JView
 {
+	protected $api_key;
+	protected $base_url;
+	
 	function display($tpl = null) 
 	{
 		JToolBarHelper::title('Brafton Article Importer','logo');
 		JToolBarHelper::apply('options.apply');
-		JToolBarHelper::save();
 		JToolBarHelper::cancel();
 		JHtml::stylesheet('com_braftonarticles/css/admin/style.css', 'media/');
+		$this->api_key = $this->get('APIKey');
+		$this->base_url = $this->get('BaseURL');
 		parent::display($tpl);
 	}
 }

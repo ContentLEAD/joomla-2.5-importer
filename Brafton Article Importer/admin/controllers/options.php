@@ -20,6 +20,8 @@ jimport('joomla.application.component.controlleradmin');
 class BraftonArticlesControllerOptions extends JControllerAdmin {
 
 	function apply() {
-		echo 'WILD ONES';
+		$model = $this->getModel('options');
+		$model->setOptions();
+		$this->setRedirect('index.php?option=com_braftonarticles', $msg);
 	}
 }
