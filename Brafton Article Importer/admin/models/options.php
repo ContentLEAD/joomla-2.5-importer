@@ -14,9 +14,7 @@ class BraftonArticlesModelOptions extends JModelList
 	
 	function __construct() {
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables');
-		$this->optionsTable = $this->getTable('braftonoptions');
-		$this->authorTable = $this->getTable('users');
-		
+		$this->optionsTable = $this->getTable('braftonoptions');		
 		parent::__construct();
 	}
 	
