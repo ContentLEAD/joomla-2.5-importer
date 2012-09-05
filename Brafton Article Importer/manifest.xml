@@ -48,8 +48,8 @@
 			<!-- views files section -->
 			<folder>views</folder>
 		</files>
-	<langages folder="admin">
-		<language tag="en-GB">language/en-GB/en-GB.ini</language>
+	<languages folder="admin">
+		<language tag="en-GB">language/en-GB/en-GB.com_braftonarticles.ini</language>
 	</languages>		
 	</administration>
 	
