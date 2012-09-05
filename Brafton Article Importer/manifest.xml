@@ -36,7 +36,7 @@
 	</files>
  
 	<administration>
-		<menu>Brafton Article Importer</menu>
+		<menu>COM_BRAFTONARTICLES</menu>
 		<files folder="admin">
 			<filename>index.html</filename>
 			<filename>braftonarticles.php</filename>
@@ -47,7 +47,10 @@
 			<folder>models</folder>
 			<!-- views files section -->
 			<folder>views</folder>
-		</files>		
+		</files>
+	<langages folder="admin">
+		<language tag="en-GB">language/en-GB/en-GB.ini</language>
+	</languages>		
 	</administration>
 	
 	<!-- UPDATESERVER DEFINITION -->
@@ -60,5 +63,5 @@
 		<folder>css</folder>
 		<folder>images</folder>
 	</media>
-	
+		
 </extension>
