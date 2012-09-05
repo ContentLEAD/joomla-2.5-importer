@@ -19,7 +19,15 @@ JHTML::_('behavior.tooltip');
 		<?php echo JHTML::tooltip('Changing the author after some articles have been uploaded 
 		will ONLY change the author for recently uploaded articles, not the older ones.  This is (currently) working as intended.', 'Consider the Following', '', '<h2 class=admin-header>Post Author</h2>'); ?>
 		Sets the post author for all imported entires<br/><br/>
-			<select name="author">			
+			<select name="author">
+				<?php foreach($this->authorList as $author): ?>
+				<option 
+					<?php if(($this->author) == $author->id): ?>
+						 selected="selected"
+					<?php endif; ?>
+						value="<?php echo $author->id; ?>"><?php echo $author->name; ?>
+				</option>
+				<?php endforeach; ?>
 			</select>
 		</td>
 		<input type="hidden" name="task" value="options.apply" />

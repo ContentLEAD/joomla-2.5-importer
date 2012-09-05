@@ -21,6 +21,8 @@ class BraftonArticlesViewOptions extends JView
 		JHtml::stylesheet('com_braftonarticles/css/admin/style.css', 'media/');
 		$this->api_key = $this->get('APIKey');
 		$this->base_url = $this->get('BaseURL');
+		$this->author = $this->get('Author');
+		$this->authorList = $this->get('AuthorList');
 		parent::display($tpl);
 	}
 }

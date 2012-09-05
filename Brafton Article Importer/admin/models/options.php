@@ -10,10 +10,13 @@ jimport('joomla.error.error');
 class BraftonArticlesModelOptions extends JModelList
 {
 	protected $optionsTable;
+	protected $authorTable;
 	
 	function __construct() {
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables');
 		$this->optionsTable = $this->getTable('braftonoptions');
+		$this->authorTable = $this->getTable('users');
+		
 		parent::__construct();
 	}
 	
@@ -55,6 +58,13 @@ class BraftonArticlesModelOptions extends JModelList
 			return;
 		}
 		
+		$authorData['option'] = "author";
+		$authorData['value'] = $options['author'];
+		if(!$this->optionsTable->save($authorData)) {
+			JError::raiseError(500, $this->optionsTable->getError());
+			return;
+		}
+		
 		JFactory::getApplication()->enqueueMessage('Your options hae successfully been saved.  Please note that your articles will not import until you have activated the bundled cron plugin.');
 	}
 	
@@ -83,6 +93,14 @@ class BraftonArticlesModelOptions extends JModelList
 	function getAuthor() {
 		$this->optionsTable->load('author');
 		return $this->optionsTable->value;
+	}
+	
+	function getAuthorList() {
+		$db = JFactory::getDBO();
+		$query = "SELECT name, id FROM #__users";
+		$db->setQuery($query);
+		$authors = $db->loadObjectList();
+		return $authors;
 	}
 	
 } // end class
