@@ -23,3 +23,5 @@ CREATE TABLE `#__brafton_options` (
   `value` varchar(500) NOT NULL,
    PRIMARY KEY  (`option`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0;
+
+INSERT INTO  `#__brafton_options` (`option`,`value`) VALUES ('api-key',  ''), ('base-url',  ''), ('author', '');
