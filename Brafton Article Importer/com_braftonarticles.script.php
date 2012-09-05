@@ -5,24 +5,7 @@ jimport('joomla.installer.installer');
 jimport('joomla.filesystem.file');
 
 class com_braftonarticlesInstallerScript
-{
-        /**
-         * Constructor
-         *
-         * @param   JAdapterInstance  $adapter  The object responsible for running this script
-         */
-        public function __constructor(JAdapterInstance $adapter);
- 
-        /**
-         * Called before any type of action
-         *
-         * @param   string  $route  Which action is happening (install|uninstall|discover_install)
-         * @param   JAdapterInstance  $adapter  The object responsible for running this script
-         *
-         * @return  boolean  True on success
-         */
-        public function preflight($route, JAdapterInstance $adapter);
- 
+{ 
         /**
          * Called after any type of action
          *
@@ -31,29 +14,11 @@ class com_braftonarticlesInstallerScript
          *
          * @return  boolean  True on success
          */
-        public function postflight($route, JAdapterInstance $adapter);
- 
-        /**
-         * Called on installation
-         *
-         * @param   JAdapterInstance  $adapter  The object responsible for running this script
-         *
-         * @return  boolean  True on success
-         */
-        public function install(JAdapterInstance $adapter) {
+        public function postflight($type, $parent){ 
 			$installer = new JInstaller;
-			$src = $this->parent->getPath('source');
+			$src = $parent->getParent()->getPath('source');
 			$installer->install($src.DS.'plg_braftoncron');
 		}
- 
-        /**
-         * Called on update
-         *
-         * @param   JAdapterInstance  $adapter  The object responsible for running this script
-         *
-         * @return  boolean  True on success
-         */
-        public function update(JAdapterInstance $adapter);
  
         /**
          * Called on uninstallation
@@ -62,6 +27,7 @@ class com_braftonarticlesInstallerScript
          */
         public function uninstall(JAdapterInstance $adapter) {
 			// Uninstalls s system plugin named plg_myplugin
+			$db = JFactory::getDBO();
 			$db->setQuery('SELECT `id` FROM #__extensions WHERE `element` = "braftoncron" AND `folder` = "system"');
 			$id = $db->loadResult();
 			if($id)
