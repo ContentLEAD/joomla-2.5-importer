@@ -1,0 +1,6 @@
+.article-preview {
+	min-height: 150px;
+}
+.article-excerpt p img {
+	padding-right: 15px;
+}

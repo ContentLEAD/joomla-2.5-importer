@@ -1,0 +1,8 @@
+div.icon-48-logo{
+	background-image: url(../../images/logo.png);
+}
+h2.admin-header {
+	padding-bottom: 0;
+	margin-bottom: 0;
+	text-decoration: underline;
+}
