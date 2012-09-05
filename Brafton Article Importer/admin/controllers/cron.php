@@ -29,7 +29,7 @@ class BraftonArticlesControllerCron extends JController
 	function loadCategories()
 	{
 		$model = $this->getModel('categories');
-		if(!$model->getCategories())) {
+		if(!$model->getCategories()) {
 			return false;
 		} else {
 			return true;

@@ -1,11 +1,8 @@
 <?php
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-// import the Joomla modellist library
-jimport('joomla.application.component.modellist');
-/**
- * BraftonArticles Model
- */
+require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'models'.DS.'parent.php');
+
 class BraftonArticlesModelCategories extends JModelList
 {
 
