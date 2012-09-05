@@ -57,7 +57,7 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 					}
 				}
 				
-				$articleData['introtext'] = $imgTmb . $article->getExcerpt();	// excerpt of the article
+				$articleData['introtext'] = $imgTmb . $article->getExtract();	// excerpt of the article
 				$articleData['fulltext'] = $imgFull . $article->getText();	// content of the article
 				/* End photo fun */
 				
