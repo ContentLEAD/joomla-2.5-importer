@@ -17,7 +17,7 @@ class BraftonArticlesViewOptions extends JView
 	{
 		JToolBarHelper::title('Brafton Article Importer','logo');
 		JToolBarHelper::apply('options.apply');
-		JToolBarHelper::cancel();
+		JToolBarHelper::cancel('options.cancel');
 		JHtml::stylesheet('com_braftonarticles/css/admin/style.css', 'media/');
 		$this->api_key = $this->get('APIKey');
 		$this->base_url = $this->get('BaseURL');

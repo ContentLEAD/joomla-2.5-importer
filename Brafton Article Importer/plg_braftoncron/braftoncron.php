@@ -36,6 +36,7 @@ class plgSystemBraftonCron extends JPlugin
 				$controller = new BraftonArticlesControllerCron($config);
 				
 				$controller->execute('loadCategories');
+				$controller->execute('loadPictures');
 				$controller->execute('loadArticles');
 				
 				$db	= JFactory::getDbo();

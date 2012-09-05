@@ -2,9 +2,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-$params =& JComponentHelper::getParams('com_media');
-$path = "file_path";
-define('COM_MEDIA_BASE', JPath::clean(JPATH_ROOT.DS.$params->get($path, 'images'.DS.'stories')));
 require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'models'.DS.'parent.php');
 
 class BraftonArticlesModelArticles extends BraftonArticlesModelParent
@@ -22,45 +19,8 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 				$articleData['id'] = null;	// primary key, must be null to auto increment
 				$articleData['title'] = $article->getHeadline();	// Title of the article
 				$articleData['alias'] = str_replace("'", "", str_replace(" ", "-", strtolower($article->getHeadline())));	// the alias is the title lowercased and spaces replaces with hyphens
-				
-				
-				
-				/* Picture Importing time */
-				$imgTmb = '';	// init as empty strings
-				$imgFull = '';
-				$photos = $article->getPhotos(); // PhotoInstance object
-				if(!empty($photos)) {		// make sure there's photos present
-				
-					$thumbnail = $photos[0]->getThumb()->getURL();	// get the URL of the thumbnail
-					$fullPic = $photos[0]->getLarge()->getURL();	// get the URL of the full pic
-					
-					$fullPic_base = basename($fullPic);		// grab just the end
-					$thumbnail_base = basename($thumbnail);
-					
-					// Strip random numbers off of pictures
-					// $firstPlace = strpos($pic_base, "_", 0);
-					// $lastPlace = strrpos($pic_base, ".");
-					// $pic_base = substr_replace($pic_base, '', $firstPlace - 1, $lastPlace - $firstPlace + 1);
-
-					// put them in appropriate folders (COM_MEDIA_BASE is defined up top)
-					$fullPic_folder = COM_MEDIA_BASE . DS . $fullPic_base;
-					$thumbnail_folder = COM_MEDIA_BASE . DS . 'brafton_thumbs' . DS . $thumbnail_base;
-					
-					// Copy them over!  It'll be slow using both the thumbnail and full pic, but I'd rather not hardcode the CSS
-					// just in case someone might want to change it.  I'll make an option for this later.
-					if(!copy($fullPic, $fullPic_folder) && !copy($thumbnail, $thumbnail_folder))
-						JError::raiseWarning(100, "An error ocurred, please refresh the page or contact an administrator");
-					else
-					{
-						$imgTmb = '<img src="'.$thumbnail_folder.'" class="article-thumbnail" />';
-						$imgFull = '<img src="'.$fullPic_folder.'" class="article-image" />';
-					}
-				}
-				
-				$articleData['introtext'] = $imgTmb . $article->getExcerpt();	// excerpt of the article
-				$articleData['fulltext'] = $imgFull . $article->getText();	// content of the article
-				/* End photo fun */
-				
+				$articleData['introtext'] = $article->getExcerpt();	// excerpt of the article
+				$articleData['fulltext'] = $article->getText();	// content of the article
 				$articleData['state'] = 1; 	// automatically published, will make an option later
 				$articleData['created'] = $article->getLastModifiedDate();	// modified date because this gets changed when the article is approved, so it'll actually post on the date that it's approved 
 				$articleData['publish_up'] = $articleData['created'];	// Same as created date, quicker to reference the variable

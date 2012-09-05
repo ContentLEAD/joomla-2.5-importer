@@ -47,8 +47,8 @@ class BraftonArticlesControllerCron extends JController
 
 	function loadPictures()
 	{
-		$model = $this->getModel('braftonarticles');
-		if(!$model->loadpics()) {
+		$model = $this->getModel('pictures');
+		if(!$model->getPictures()) {
 			return false;
 		} else {
 			return true;
