@@ -62,7 +62,14 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 				/* End photo fun */
 				
 				$articleData['state'] = 1; 	// automatically published, will make an option later
-				$articleData['created'] = $article->getLastModifiedDate();	// modified date because this gets changed when the article is approved, so it'll actually post on the date that it's approved 
+				$optsTable = $this->getTable('braftonoptions');
+				$optsTable->load('import-order');
+				$importOrder = $optsTable->value;
+				
+				if ($importOrder == 'Last Modified Date')
+					$articleData['created'] = $article->getLastModifiedDate();
+				else
+					$articleData['created'] = $article->getCreatedDate();
 				$articleData['publish_up'] = $articleData['created'];	// Same as created date, quicker to reference the variable
 				
 				// Grab the author from the options table

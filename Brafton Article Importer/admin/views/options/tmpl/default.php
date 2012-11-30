@@ -31,6 +31,24 @@ JHTML::_('behavior.tooltip');
 			</select>
 		</td>
 		<input type="hidden" name="task" value="options.apply" />
+	</tr>
+	<tr>
+		<td>
+			<?php echo JHTML::tooltip('Sets the article\'s created date based on the following', 'Import Order', '', '<h2 class=admin-header>Import Order</h2>'); ?>
+			<select name="import-order">
+				<?php
+					$opts = array('Created Date', 'Last Modified Date');
+					foreach ($opts as $o) : ?>
+					<option 
+						<?php if ($this->importOrder == $o) : ?>
+							selected="selected"
+						<?php endif; ?>
+					value="<?php echo $o; ?>"><?php echo $o; ?>
+				</option>
+				<?php endforeach; ?>
+			</select>
+		</td>
+	</tr>
 </table>
 
 </form>

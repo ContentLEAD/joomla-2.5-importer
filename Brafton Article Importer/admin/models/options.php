@@ -63,6 +63,13 @@ class BraftonArticlesModelOptions extends JModelList
 			return;
 		}
 		
+		$importOrderData['option'] = 'import-order';
+		$importOrderData['value'] = $options['import-order'];
+		if(!$this->optionsTable->save($importOrderData)) {
+			JError::raiseError(500, $this->optionsTable->getError());
+			return;
+		}
+		
 		JFactory::getApplication()->enqueueMessage('Your options hae successfully been saved.  Please note that your articles will not import until you have activated the <a href="index.php?option=com_plugins">bundled cron plugin</a>.');
 	}
 	
@@ -99,6 +106,11 @@ class BraftonArticlesModelOptions extends JModelList
 		$db->setQuery($query);
 		$authors = $db->loadObjectList();
 		return $authors;
+	}
+	
+	function getImportOrder() {
+		$this->optionsTable->load('import-order');
+		return $this->optionsTable->value;
 	}
 	
 } // end class

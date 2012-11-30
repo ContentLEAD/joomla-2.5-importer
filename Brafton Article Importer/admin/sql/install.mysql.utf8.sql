@@ -20,4 +20,4 @@ CREATE TABLE IF NOT EXISTS `#__brafton_options` (
    PRIMARY KEY  (`option`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0;
 
-INSERT INTO  `#__brafton_options` (`option`,`value`) VALUES ('api-key',  ''), ('base-url',  ''), ('author', '');
+INSERT IGNORE INTO  `#__brafton_options` (`option`,`value`) VALUES ('api-key',  ''), ('base-url',  ''), ('author', ''), ('import-order', '');

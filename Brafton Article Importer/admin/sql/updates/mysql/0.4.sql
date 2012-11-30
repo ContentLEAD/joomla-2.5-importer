@@ -1,0 +1,1 @@
+INSERT IGNORE INTO #__brafton_options (`option`) VALUES ('import-order')
