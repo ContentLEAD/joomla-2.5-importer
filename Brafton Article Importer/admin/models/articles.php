@@ -10,7 +10,6 @@ require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'m
 class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 {
 	public function getArticles() {
-	
 		$newsList = $this->feed->getNewsHTML(); //return an array of your latest news items with HTML encoding text. Note this is still raw data.
 		
 		foreach ($newsList as $article) {
@@ -52,8 +51,13 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 						JError::raiseWarning(100, "An error ocurred, please refresh the page or contact an administrator");
 					else
 					{
-						$imgTmb = '<img src="'.$thumbnail_folder.'" class="article-thumbnail" />';
-						$imgFull = '<img src="'.$fullPic_folder.'" class="article-image" />';
+						// yeah, the images path is hardcoded.
+						// deal with it.
+						if ($thumbnail != null)
+							$imgTmb = '<img src="' . JURI::base(true) . "/images/brafton_thumbs/$thumbnail_base" . '" class="article-thumbnail" />';
+						else
+							$imgTmb = '<img src="' . JURI::base(true) . "/images/$fullPic_base" . '" class="article-image-thumbnail" />';
+						$imgFull = '<img src="' . JURI::base(true) . "/images/$fullPic_base" . '" class="article-image" />';
 					}
 				}
 				
