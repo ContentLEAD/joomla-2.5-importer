@@ -18,5 +18,5 @@ class TableBraftonCategories extends JTable
 	function __construct(&$db) 
 	{
 		parent::__construct('#__brafton_categories', 'id', $db);
-	}	
+	}
 }

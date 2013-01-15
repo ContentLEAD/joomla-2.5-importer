@@ -13,7 +13,7 @@ class BraftonArticlesControllerCron extends JController
 		parent::__construct( $config );
 	}
 
-	function display($cachable = false) 
+	function display($cachable = false, $urlparams = false) 
 	{
 		// set default view if not set
 		JRequest::setVar('view', JRequest::getCmd('view','Options'));
