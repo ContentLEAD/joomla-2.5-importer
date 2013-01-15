@@ -53,8 +53,8 @@ class BraftonArticlesModelCategories extends JModelList
 			if (!$this->category_exists($category, $brCategoryRow))
 			{
 				$categoryData = array(
-					'title' =>			$category->getName(),
-					'alias' =>			strtolower($category->getName()), /* check() handles slugification */
+					'title' =>			trim($category->getName()),
+					'alias' =>			strtolower(trim($category->getName())), /* check() handles slugification */
 					'extension' =>		'com_content',
 					'published' =>		1,
 					'language' =>		'*',
@@ -72,6 +72,12 @@ class BraftonArticlesModelCategories extends JModelList
 					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR);
 				else
 					$categoryRow->rebuildPath($categoryRow->id);
+				
+				$brCategoryData['id'] = null;
+				// Since $categoryRow now contains the data from the last insert, we can use this id to our advantage
+				$brCategoryData['cat_id'] = $categoryRow->id;
+				$brCategoryData['brafton_cat_id'] = (int) $category->getId();
+				$brCategoryRow->save($brCategoryData);
 			}
 		}
 	}
