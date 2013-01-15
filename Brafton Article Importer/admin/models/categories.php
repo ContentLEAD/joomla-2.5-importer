@@ -1,96 +1,97 @@
 <?php
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
+
 require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'models'.DS.'parent.php');
+require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables'.DS.'braftonoptions.php');
+require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables'.DS.'braftoncategories.php');
+jimport('joomla.database.table');
+jimport('joomla.log.log');
 
 class BraftonArticlesModelCategories extends JModelList
 {
-
 	// Variable for feed
 	protected $feed;
+	
+	private $_braftonOptions;
 	
 	/*
 	*	Default constructor - Sets the feed handler from the options
 	*	PRE: N/A
 	*	POST: No return - $feed is set as an ApiHandler
 	*/
-	function __construct() {
-	
-		// Cannot seem to call JModel::getTable() from the constructor without this line
-		// even though you can call it without the include further down.  Possible Joomla bug?
-		// EXPLORE FURTHER
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables');
-		$options = $this->getTable('braftonoptions');
+	function __construct()
+	{
+		parent::__construct();
+		
+		$this->_braftonOptions = JTable::getInstance('BraftonOptions', 'Table');
 		
 		// Load the API Key from the options
-		$options->load('api-key');
-		$API_Key = $options->value;
+		$this->_braftonOptions->load('api-key');
+		$API_Key = $this->_braftonOptions->value;
 		
 		// Load the base URL from the options
-		$options->load('base-url');
-		$API_BaseURL = $options->value;
+		$this->_braftonOptions->load('base-url');
+		$API_BaseURL = $this->_braftonOptions->value;
 		
 		// Get a new feed handler
 		$this->feed = new ApiHandler($API_Key, $API_BaseURL);
 		
-		parent::__construct();
-	} // end constructor
-	
-	// The client may have to run "Rebuild Categories" after the fact.  Doing this sets the lft and rgt settings
-	// Using the "Rebuild Categories" function is probably a LOT safer then me fumbling around trying to fix it myself
+		JLog::addLogger(array());
+	}
 	
 	// getCategories gets the categories from the XML feed and set it in the database.
-	public function getCategories() {
-	
+	public function getCategories()
+	{
 		$categoryList = $this->feed->getCategoryDefinitions();
 		
-		foreach ($categoryList as $category) {
+		foreach ($categoryList as $category)
+		{
+			$categoryRow = JTable::getInstance('Category');
+			$brCategoryRow = JTable::getInstance('BraftonCategories', 'Table');
 			
-			// Open up the tables for saving/loading etc.
-			$categoryRow = $this->getTable('categories');
-			$brCategoryRow = $this->getTable('braftoncategories');
-			
-			// If the category exists, we don't want it in there again!
-			if(!$this->category_exists($category, $brCategoryRow)) {
+			if (!$this->category_exists($category, $brCategoryRow))
+			{
+				$categoryData = array(
+					'title' =>			$category->getName(),
+					'alias' =>			strtolower($category->getName()), /* check() handles slugification */
+					'extension' =>		'com_content',
+					'published' =>		1,
+					'language' =>		'*',
+					'level' =>			1,
+					'parent_id' =>		1,
+					'params' =>			'{"target":"","image":""}',
+					'metadata' =>		'{"page_title":"","author":"","robots":""}',
+					'access' =>			1
+				);
 				
-				// First set the category in...
-				// There's a lot of Joomla specific stuff here.
-				// There may be a way to establish this stuff using the JTable instance
-				$categoryData['id'] = null;		// primary key, must be null to auto_increment
-				$categoryData['title'] = $category->getName();	// the title, aka category name
-				$categoryData['alias'] = str_replace(" ", "-", strtolower($category->getName()));	// the alias is the title lowercased and spaces replaces with hyphens
-				$categoryData['path'] = $categoryData['alias']; // path is the same as the alias
-				$categoryData['parent_id'] = 1; 	// default to root parent
-				$categoryData['extension'] = 'com_content'; // yes this is correct, the articles are being pushed into com_content
-				$categoryData['published'] = 1; // auto published category, may make an option at a later date
-				$categoryData['language'] = '*';
-				$categoryRow->save($categoryData);
+				$categoryRow->bind($categoryData);
+				$categoryRow->setLocation(1, 'last-child'); /* sets up the category in the tree */
 				
-				// Then associate the brafton categories with the ones inserted
-				// Using the JTable class, cat_id can't be the primary key.  When trying to save(), it detects it as the primary
-				// and it assumes you're updating the row with that key, instead of adding a row.  A blank primary key is needed to insert.
-				$brCategoryData['id'] = null;
-				// Since $categoryRow now contains the data from the last insert, we can use this id to our advantage
-				$brCategoryData['cat_id'] = $categoryRow->id;
-				$brCategoryData['brafton_cat_id'] = (int) $category->getId();
-				$brCategoryRow->save($brCategoryData);
-			} // end if category exists
-		} //end foreach
-	} //end getCategories
+				if (!$categoryRow->check() || !$categoryRow->store(true))
+					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR);
+				else
+					$categoryRow->rebuildPath($categoryRow->id);
+			}
+		}
+	}
 	
 	/*
 	*	$category - a NewsCategory item
 	*	$row - connection to brafton_categories table
 	*/
-	private function category_exists($category, $brCategoryRow) {
-
-		$brCategoryID = $category->getId();
-		$keys['brafton_cat_id'] = $brCategoryID;
-		$brCategoryRow->load($keys);
-		// If the row returns a key and not null, we know it exists.  Otherwise, it doesn't so it's safe to add
-		if(!empty($brCategoryRow->brafton_cat_id))
-			return true;
-		else
+	private function category_exists($category, $brCategoryRow)
+	{
+		$jcatid = 0;
+		$db = $brCategoryRow->getDbo();
+		
+		$q = $db->getQuery(true);
+		$q->select('cat_id')->from('#__brafton_categories')->where('brafton_cat_id=' . $db->quote($category->getId()));
+		
+		$db->setQuery($q);
+		
+		if (!$db->loadRow())
 			return false;
-	} // end category_exists
-} // end class
+		return true;
+	}
+}
