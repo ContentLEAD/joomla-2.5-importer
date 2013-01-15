@@ -2,12 +2,12 @@
 <extension type="component" version="1.6.0" method="upgrade">
 	<name>Brafton Articles</name>
 	<creationDate>August 2012</creationDate>
-	<author>Michael Walton</author>
-	<authorEmail>michael.walton@contentlead.com</authorEmail>
+	<author>ContentLEAD</author>
+	<authorEmail>techsupport@contentlead.com</authorEmail>
 	<authorUrl>http://www.contentlead.com</authorUrl>
 	<copyright>Copyright 2012</copyright>
 	<license>GPL</license>
-	<version>0.4</version>
+	<version>0.4.1</version>
 	<description>Imports articles from Brafton/ContentLEAD/Castleford XML feeds</description>
 	<scriptfile>com_braftonarticles.script.php</scriptfile>
  
