@@ -28,7 +28,7 @@ class com_braftonarticlesInstallerScript
         public function uninstall(JAdapterInstance $adapter) {
 			// Uninstalls s system plugin named plg_myplugin
 			$db = JFactory::getDBO();
-			$db->setQuery('SELECT `id` FROM #__extensions WHERE `element` = "braftoncron" AND `folder` = "system"');
+			$db->setQuery('SELECT `extension_id` FROM #__extensions WHERE `element` = "braftoncron" AND `folder` = "system"');
 			$id = $db->loadResult();
 			if($id)
 			{
