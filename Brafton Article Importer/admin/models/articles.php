@@ -53,8 +53,8 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 					{
 						// yeah, the images path is hardcoded.
 						// deal with it.
-						if ($thumbnail_base != null)
-							$imgTmb = '<img src="' . JURI::base(true) . "/images/brafton_thumbs/$thumbnail_base" . '" class="article-thumbnail" />';
+						if ($thumbnail_base != null && strtolower($thumbnail_base) != 'null')
+							$imgTmb = '<img src="' . JURI::base(true) . "/images/$thumbnail_base" . '" class="article-thumbnail" />';
 						else
 							$imgTmb = '<img src="' . JURI::base(true) . "/images/$fullPic_base" . '" class="article-image-thumbnail" />';
 						$imgFull = '<img src="' . JURI::base(true) . "/images/$fullPic_base" . '" class="article-image" />';
