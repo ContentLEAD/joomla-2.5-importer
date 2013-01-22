@@ -1,7 +1,7 @@
 <?php
-
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
+
 $params =& JComponentHelper::getParams('com_media');
 $path = "file_path";
 define('COM_MEDIA_BASE', JPath::clean(JPATH_ROOT.DS.$params->get($path, 'images'.DS.'stories')));
@@ -9,20 +9,21 @@ require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'m
 
 class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 {
-	public function getArticles() {
+	public function getArticles()
+	{
 		$newsList = $this->feed->getNewsHTML(); //return an array of your latest news items with HTML encoding text. Note this is still raw data.
 		
-		foreach ($newsList as $article) {
-		
+		foreach ($newsList as $article)
+		{
 			$contentRow = $this->getTable('content');
 			$brContentRow = $this->getTable('braftoncontent');
 			$brCategoryRow = $this->getTable('braftoncategories');
 			if(!$this->article_exists($article, $brContentRow)) {
 				$articleData['id'] = null;	// primary key, must be null to auto increment
 				$articleData['title'] = $article->getHeadline();	// Title of the article
-				$articleData['alias'] = str_replace("'", "", str_replace(" ", "-", strtolower($article->getHeadline())));	// the alias is the title lowercased and spaces replaces with hyphens
-				
-				
+				// replace non-letter, non-number characters with dashes & collapse
+				// this is preferred over trim() because it will properly capture at boundaries and inside words
+				$articleData['alias'] = preg_replace(array('/[^a-zA-Z0-9]+/', '/^-+/', '/-+$/'), array('-', '', ''), strtolower($article->getHeadline()));
 				
 				/* Picture Importing time */
 				$imgTmb = '';	// init as empty strings
@@ -40,7 +41,6 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 					// $firstPlace = strpos($pic_base, "_", 0);
 					// $lastPlace = strrpos($pic_base, ".");
 					// $pic_base = substr_replace($pic_base, '', $firstPlace - 1, $lastPlace - $firstPlace + 1);
-
 					// put them in appropriate folders (COM_MEDIA_BASE is defined up top)
 					$fullPic_folder = COM_MEDIA_BASE . DS . $fullPic_base;
 					$thumbnail_folder = COM_MEDIA_BASE . DS . 'brafton_thumbs' . DS . $thumbnail_base;
