@@ -9,10 +9,14 @@ class plgSystemBraftonCron extends JPlugin
 	function plgSystemBraftonCron( &$subject, $params )
 	{
 		parent::__construct( $subject, $params );
-		$this->plugin	= JPluginHelper::getPlugin('system', 'braftoncron');
-		$this->params	= new JParameter($this->plugin->params);
-		$this->interval	= (int) ($this->params->get('interval', 5)*60);
-		if ($this->interval < 300) { $this->interval = 300; }
+		
+		$this->plugin = JPluginHelper::getPlugin('system', 'braftoncron');
+		$this->params = new JInput();
+		$this->params->get('params');
+		
+		$this->interval	= ((int)$this->params->get('interval', 5)) * 60;
+		if ($this->interval < 300)
+			$this->interval = 300;
 	}
 
 	function onAfterRoute()
