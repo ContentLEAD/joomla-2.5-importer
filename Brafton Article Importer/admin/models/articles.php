@@ -2,7 +2,7 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-$params =& JComponentHelper::getParams('com_media');
+$params = JComponentHelper::getParams('com_media');
 $path = "file_path";
 define('COM_MEDIA_BASE', JPath::clean(JPATH_ROOT.DS.$params->get($path, 'images'.DS.'stories')));
 require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'models'.DS.'parent.php');
