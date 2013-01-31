@@ -17,12 +17,9 @@ class BraftonArticlesController extends JController
 	 */
 	function display($cachable = false, $urlparams = false) 
 	{
-		// set default view if not set
-		JRequest::setVar('view', JRequest::getCmd('view', 'Options'));	
-		//$view = $this->getView( 'braftonarticles', 'html' );	
-		//$view->setModel( $this->getModel( 'Articles' ), true );
-		//$view->setModel( $this->getModel( 'Categories' ) );
-		// call parent behavior
+		$jinput = JFactory::getApplication()->input;
+		JRequest::setVar('view', $jinput->get('view', 'Options'));
+		
 		parent::display($cachable);
 	}
 }
