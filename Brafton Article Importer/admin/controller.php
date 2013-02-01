@@ -23,3 +23,4 @@ class BraftonArticlesController extends JController
 		parent::display($cachable);
 	}
 }
+?>

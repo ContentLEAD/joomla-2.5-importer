@@ -85,3 +85,4 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 		$this->setRedirect('index.php?option=com_braftonarticles', $msg);
 	}
 }
+?>
