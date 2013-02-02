@@ -13,6 +13,7 @@ class BraftonArticlesViewOptions extends JView
 	protected $api_key;
 	protected $base_url;
 	protected $importOrder;
+	protected $publishedState;
 	
 	function display($tpl = null)
 	{
@@ -30,6 +31,7 @@ class BraftonArticlesViewOptions extends JView
 		$this->author = $this->get('Author');
 		$this->authorList = $this->get('AuthorList');
 		$this->importOrder = $this->get('ImportOrder');
+		$this->publishedState = $this->get('PublishedState');
 		
 		parent::display($tpl);
 	}

@@ -70,6 +70,13 @@ class BraftonArticlesModelOptions extends JModelList
 			return;
 		}
 		
+		$publishedStateData['option'] = 'published-state';
+		$publishedStateData['value'] = $options['published-state'];
+		if(!$this->optionsTable->save($publishedStateData)) {
+			JError::raiseError(500, $this->optionsTable->getError());
+			return;
+		}
+		
 		JFactory::getApplication()->enqueueMessage('Your options have successfully been saved.  Please note that your articles will not import until you have activated the <a href="index.php?option=com_plugins">bundled cron plugin</a>.');
 	}
 	
@@ -110,6 +117,11 @@ class BraftonArticlesModelOptions extends JModelList
 	
 	function getImportOrder() {
 		$this->optionsTable->load('import-order');
+		return $this->optionsTable->value;
+	}
+	
+	function getPublishedState() {
+		$this->optionsTable->load('published-state');
 		return $this->optionsTable->value;
 	}
 	

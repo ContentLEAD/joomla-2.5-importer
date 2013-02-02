@@ -51,10 +51,22 @@ JHTML::_('behavior.tooltip');
 						</option>
 						<?php endforeach; ?>
 					</select>
+					
+					<?php echo JHTML::tooltip('The article\'s published status when imported', 'Published Status', '', '<h2 class=admin-header>Published Status</h2>'); ?>
+					<select name="published-state">
+						<?php
+							$opts = array('Published', 'Unpublished');
+							foreach ($opts as $o) : ?>
+							<option 
+								<?php if ($this->publishedState == $o) : ?>
+									selected="selected"
+								<?php endif; ?>
+							value="<?php echo $o; ?>"><?php echo $o; ?>
+						<?php endforeach; ?>
+					</select>
 				</div>
 			</fieldset>
 		</td>
 	</tr>
 </table>
-
 </form>

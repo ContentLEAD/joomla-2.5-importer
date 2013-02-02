@@ -64,7 +64,15 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 				$articleData['fulltext'] = $imgFull . $article->getText();	// content of the article
 				/* End photo fun */
 				
-				$articleData['state'] = 1; 	// automatically published, will make an option later
+				$optsTable = $this->getTable('braftonoptions');
+				$optsTable->load('published-state');
+				$publishedState = $optsTable->value;
+				
+				if ($publishedState == 'Unpublished')
+					$articleData['state'] = 0;
+				else
+					$articleData['state'] = 1;
+				
 				$optsTable = $this->getTable('braftonoptions');
 				$optsTable->load('import-order');
 				$importOrder = $optsTable->value;
