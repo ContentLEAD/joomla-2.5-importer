@@ -82,7 +82,7 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 			$msgType = 'notice';
 		}
 		
-		$this->setRedirect('index.php?option=com_braftonarticles', $msg);
+		$this->setRedirect('index.php?option=com_braftonarticles', $msg, $msgType);
 	}
 }
 ?>
