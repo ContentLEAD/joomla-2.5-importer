@@ -41,7 +41,7 @@ JHTML::_('behavior.tooltip');
 					<?php echo JHTML::tooltip('Sets the article\'s created date based on the following', 'Import Order', '', '<h2 class=admin-header>Import Order</h2>'); ?>
 					<select name="import-order">
 						<?php
-							$opts = array('Created Date', 'Last Modified Date');
+							$opts = array('Published Date', 'Last Modified Date', 'Created Date');
 							foreach ($opts as $o) : ?>
 							<option 
 								<?php if ($this->importOrder == $o) : ?>

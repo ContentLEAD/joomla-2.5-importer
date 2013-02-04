@@ -77,10 +77,14 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 				$optsTable->load('import-order');
 				$importOrder = $optsTable->value;
 				
-				if ($importOrder == 'Last Modified Date')
+				if ($importOrder == 'Published Date')
+					$articleData['created'] = $article->getPublishDate();
+				else if ($importOrder == 'Last Modified Date')
 					$articleData['created'] = $article->getLastModifiedDate();
 				else
+					// fall back to created date - this handles invalid db values as well
 					$articleData['created'] = $article->getCreatedDate();
+				
 				$articleData['publish_up'] = $articleData['created'];	// Same as created date, quicker to reference the variable
 				
 				// Grab the author from the options table
