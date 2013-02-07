@@ -17,11 +17,15 @@ class BraftonArticlesViewLog extends JView
 		JHtml::stylesheet('com_braftonarticles/css/admin/style.css', 'media/');
 		JToolBarHelper::title('Brafton Article Importer','logo');
 		
-		$toolbar->appendButton('Confirm', 'This will build the importing category structure from scratch! Are you sure you want to do this?', 'refresh', 'Sync Categories', 'devtools.sync_categories', false);
-		
 		$config = new JConfig();
-		$logPath = $config->log_path . '/com_braftonarticles.log.php';
-		$this->logContents = JFile::read($logPath);
+		$logPath = rtrim($config->log_path, '/') . '/com_braftonarticles.log.php';
+		if (JFile::exists($logPath))
+			$this->logContents = JFile::read($logPath);
+		else
+		{
+			$app = JFactory::getApplication();
+			$app->enqueueMessage('Empty log file.');
+		}
 		
 		parent::display($tpl);
 	}
