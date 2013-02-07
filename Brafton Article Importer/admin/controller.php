@@ -18,7 +18,8 @@ class BraftonArticlesController extends JController
 	function display($cachable = false, $urlparams = false) 
 	{
 		$jinput = JFactory::getApplication()->input;
-		JRequest::setVar('view', $jinput->get('view', 'Options'));
+		$viewName = $jinput->get('view', 'Options');
+		$jinput->set('view', $viewName);
 		
 		parent::display($cachable);
 	}
