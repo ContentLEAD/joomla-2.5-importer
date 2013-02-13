@@ -2,6 +2,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.plugin.plugin' );
 jimport( 'joomla.html.parameter' );
+jimport('joomla.log.log');
 
 class plgSystemBraftonCron extends JPlugin
 {
@@ -9,6 +10,8 @@ class plgSystemBraftonCron extends JPlugin
 	function plgSystemBraftonCron( &$subject, $params )
 	{
 		parent::__construct( $subject, $params );
+		
+		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
 		
 		$this->plugin = JPluginHelper::getPlugin('system', 'braftoncron');
 		$this->params = new JInput();
@@ -34,12 +37,34 @@ class plgSystemBraftonCron extends JPlugin
 
 			if ($diff > $this->interval)
 			{
+				// check for dependencies
+				$needed = array('DOMDocument');
+				$missing = array();
+				foreach ($needed as $n)
+					if (!class_exists($n))
+						$missing []= $n;
+				
+				if (!empty($missing))
+				{
+					JLog::add(sprintf('Cannot trigger importer. Missing dependencies: %s.', implode(', ', $missing)), JLog::ERROR, 'com_braftonarticles');
+					return;
+				}
+				
+				JLog::add('Triggering importer.', JLog::DEBUG, 'com_braftonarticles');
+				
 				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'controllers'.DS.'cron.php');
 				$config = array('base_path'=>JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles');
 				$controller = new BraftonArticlesControllerCron($config);
 				
-				$controller->execute('loadCategories');
-				$controller->execute('loadArticles');
+				try
+				{
+					$controller->execute('loadCategories');
+					$controller->execute('loadArticles');
+				}
+				catch (Exception $ex)
+				{
+					JLog::add(sprintf('FATAL: Uncaught exception: %s. Stack Trace: ' . "\n" . '%s', $ex->getMessage(), $ex->getTraceAsString()), JLog::ERROR, 'com_braftonarticles');
+				}
 				
 				$db	= JFactory::getDbo();
 				$this->params->set('last_import',$now);	
