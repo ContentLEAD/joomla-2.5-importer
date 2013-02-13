@@ -28,14 +28,14 @@ class BraftonArticlesModelOptions extends JModelList
 		$options = JRequest::get('post');
 		
 		if(!preg_match('/'.$API_pattern.'/', $options['api-key'], $apiKey)) {
-			JError::raiseWarning(100, 'There was a problem registering your base URL.  Please double check and try again.');
-			return;
-		}
-		if(!preg_match('/'.$baseURL_pattern.'/', $options['api-key'], $baseURL)){
 			JError::raiseWarning(100, 'There was a problem registering your API key.  Please double check and try again.');
 			return;
 		}
-
+		if(!preg_match('/'.$baseURL_pattern.'/', $options['base-url'], $baseURL)){
+			JError::raiseWarning(100, 'There was a problem registering your base URL.  Please double check and try again.');
+			return;
+		}
+		
 		/* Push in the key, bust not before some checking... */
 		// Scrub the key
 		$apiKey[0] = trim(stripslashes($apiKey[0]), '/');
