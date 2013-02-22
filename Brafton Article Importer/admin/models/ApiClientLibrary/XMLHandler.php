@@ -28,7 +28,7 @@ class XMLHandler {
 		
 		if ($allowUrlFopenAvailable)
 		{
-			if(!@$this->doc->load($url)) throw new XMLLoadException($url);
+			if(!@$this->doc->load($url)) throw new XMLLoadException('(allow_url_fopen method) ' . $url);
 		}
 		else if ($cUrlAvailable)
 		{
@@ -39,7 +39,7 @@ class XMLHandler {
 			$xml = curl_exec($ch);
 			curl_close($ch);
 			
-			if (!@$this->doc->loadXML($xml)) throw new XMLLoadException($url);
+			if (!@$this->doc->loadXML($xml)) throw new XMLLoadException('(cURL method) ' . $url);
 		}
 	}
 
