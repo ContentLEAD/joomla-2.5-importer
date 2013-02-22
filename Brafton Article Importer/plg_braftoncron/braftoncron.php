@@ -50,8 +50,6 @@ class plgSystemBraftonCron extends JPlugin
 					return;
 				}
 				
-				JLog::add('Triggering importer.', JLog::DEBUG, 'com_braftonarticles');
-				
 				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'controllers'.DS.'cron.php');
 				$config = array('base_path'=>JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles');
 				$controller = new BraftonArticlesControllerCron($config);
