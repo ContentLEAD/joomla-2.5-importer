@@ -8,6 +8,52 @@ require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'m
 
 class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 {
+	protected $_loadingMechanism;
+	
+	function __construct()
+	{
+		parent::__construct();
+		
+		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
+		
+		$allowUrlFopenAvailable = ini_get('allow_url_fopen') == "1" || ini_get('allow_url_fopen') == "On";
+		$cUrlAvailable = function_exists('curl_version');
+		
+		if (!$allowUrlFopenAvailable && !$cUrlAvailable)
+		{
+			$report = implode(", ", array(sprintf("allow_url_fopen is %s", ($allowUrlFopenAvailable ? "On" : "Off")), sprintf("cURL is %s", ($cUrlAvailable ? "enabled" : "disabled"))));
+			throw new Exception(sprintf("No feed loading mechanism available - PHP reported %s", $report), "");
+		}
+		
+		// prioritize cURL over allow_url_fopen
+		if ($cUrlAvailable)
+			$this->_loadingMechanism = "cURL";
+		else if ($allowUrlFopenAvailable)
+			$this->_loadingMechanism = "allow_url_fopen";
+	}
+	
+	protected function saveImage($source, $dest)
+	{
+		if ($this->_loadingMechanism == "cURL")
+		{
+			$ch = curl_init($source);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			
+			$image = curl_exec($ch);
+			curl_close($ch);
+			
+			$result = file_put_contents($dest, $image);
+			return $result !== false;
+		}
+		else if ($this->_loadingMechanism == "allow_url_fopen")
+		{
+			return @copy($source, $dest);
+		}
+		
+		return false;
+	}
+	
 	public function getArticles()
 	{
 		$newsList = $this->feed->getNewsHTML(); //return an array of your latest news items with HTML encoding text. Note this is still raw data.
@@ -46,8 +92,8 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 					
 					// Copy them over!  It'll be slow using both the thumbnail and full pic, but I'd rather not hardcode the CSS
 					// just in case someone might want to change it.  I'll make an option for this later.
-					if(!copy($fullPic, $fullPic_folder) && !copy($thumbnail, $thumbnail_folder))
-						JError::raiseWarning(100, "An error ocurred, please refresh the page or contact an administrator");
+					if(($fullPic_base != null || $thumbnail_base != null) && !$this->saveImage($fullPic, $fullPic_folder) && !$this->saveImage($thumbnail, $thumbnail_folder))
+						JLog::add('Warning: Failed to save any images.', JLog::WARNING, 'com_braftonarticles');
 					else
 					{
 						// yeah, the images path is hardcoded.
