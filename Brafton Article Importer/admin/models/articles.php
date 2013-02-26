@@ -8,33 +8,9 @@ require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'m
 
 class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 {
-	protected $_loadingMechanism;
-	
-	function __construct()
-	{
-		parent::__construct();
-		
-		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
-		
-		$allowUrlFopenAvailable = ini_get('allow_url_fopen') == "1" || ini_get('allow_url_fopen') == "On";
-		$cUrlAvailable = function_exists('curl_version');
-		
-		if (!$allowUrlFopenAvailable && !$cUrlAvailable)
-		{
-			$report = implode(", ", array(sprintf("allow_url_fopen is %s", ($allowUrlFopenAvailable ? "On" : "Off")), sprintf("cURL is %s", ($cUrlAvailable ? "enabled" : "disabled"))));
-			throw new Exception(sprintf("No feed loading mechanism available - PHP reported %s", $report), "");
-		}
-		
-		// prioritize cURL over allow_url_fopen
-		if ($cUrlAvailable)
-			$this->_loadingMechanism = "cURL";
-		else if ($allowUrlFopenAvailable)
-			$this->_loadingMechanism = "allow_url_fopen";
-	}
-	
 	protected function saveImage($source, $dest)
 	{
-		if ($this->_loadingMechanism == "cURL")
+		if ($this->loadingMechanism == "cURL")
 		{
 			$ch = curl_init($source);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -46,7 +22,7 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 			$result = file_put_contents($dest, $image);
 			return $result !== false;
 		}
-		else if ($this->_loadingMechanism == "allow_url_fopen")
+		else if ($this->loadingMechanism == "allow_url_fopen")
 		{
 			return @copy($source, $dest);
 		}
@@ -174,4 +150,5 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 		else
 			return false;
 	}
-} // end class
+}
+?>

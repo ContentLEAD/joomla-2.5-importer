@@ -1,29 +1,38 @@
 <?php
-
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-// import the Joomla modellist library
+
 jimport('joomla.application.component.modellist');
 ini_set('max_execution_time', 300);
 include_once 'ApiClientLibrary/ApiHandler.php';
 
-// Acts as sort of a parent class to the article/category models, setting defaults n stuff.
 class BraftonArticlesModelParent extends JModelList
 {
-	// Variable for feed
 	protected $feed;
 	protected $options;
+	protected $loadingMechanism;
 	
-	/*
-	*	Default constructor - Sets the feed handler from the options
-	*	PRE: N/A
-	*	POST: No return - $feed is set as an ApiHandler
-	*/
-	function __construct() {
-	
-		// Cannot seem to call JModel::getTable() from the constructor without this line
-		// even though you can call it without the include further down.  Possible Joomla bug?
-		// EXPLORE FURTHER
+	function __construct()
+	{
+		parent::__construct();
+		
+		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
+		
+		$allowUrlFopenAvailable = ini_get('allow_url_fopen') == "1" || ini_get('allow_url_fopen') == "On";
+		$cUrlAvailable = function_exists('curl_version');
+		
+		if (!$allowUrlFopenAvailable && !$cUrlAvailable)
+		{
+			$report = implode(", ", array(sprintf("allow_url_fopen is %s", ($allowUrlFopenAvailable ? "On" : "Off")), sprintf("cURL is %s", ($cUrlAvailable ? "enabled" : "disabled"))));
+			throw new Exception(sprintf("No feed loading mechanism available - PHP reported %s", $report), "");
+		}
+		
+		// prioritize cURL over allow_url_fopen
+		if ($cUrlAvailable)
+			$this->loadingMechanism = "cURL";
+		else if ($allowUrlFopenAvailable)
+			$this->loadingMechanism = "allow_url_fopen";
+		
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables');
 		$this->options = $this->getTable('braftonoptions');
 		
@@ -37,8 +46,7 @@ class BraftonArticlesModelParent extends JModelList
 		
 		// Get a new feed handler
 		$this->feed = new ApiHandler($API_Key, $API_BaseURL);
+	}
 
-		parent::__construct();
-	} // end constructor
-
-} // end class
+}
+?>
