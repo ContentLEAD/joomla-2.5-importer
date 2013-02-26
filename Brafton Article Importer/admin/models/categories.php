@@ -37,7 +37,7 @@ class BraftonArticlesModelCategories extends JModelList
 		// Get a new feed handler
 		$this->feed = new ApiHandler($API_Key, $API_BaseURL);
 		
-		JLog::addLogger(array());
+		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
 	}
 	
 	// getCategories gets the categories from the XML feed and set it in the database.
@@ -69,7 +69,7 @@ class BraftonArticlesModelCategories extends JModelList
 				$categoryRow->setLocation(1, 'last-child'); /* sets up the category in the tree */
 				
 				if (!$categoryRow->check() || !$categoryRow->store(true))
-					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR);
+					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR, 'com_braftonarticles');
 				else
 					$categoryRow->rebuildPath($categoryRow->id);
 				
