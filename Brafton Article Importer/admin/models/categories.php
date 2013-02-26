@@ -8,38 +8,8 @@ require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'t
 jimport('joomla.database.table');
 jimport('joomla.log.log');
 
-class BraftonArticlesModelCategories extends JModelList
-{
-	// Variable for feed
-	protected $feed;
-	
-	private $_braftonOptions;
-	
-	/*
-	*	Default constructor - Sets the feed handler from the options
-	*	PRE: N/A
-	*	POST: No return - $feed is set as an ApiHandler
-	*/
-	function __construct()
-	{
-		parent::__construct();
-		
-		$this->_braftonOptions = JTable::getInstance('BraftonOptions', 'Table');
-		
-		// Load the API Key from the options
-		$this->_braftonOptions->load('api-key');
-		$API_Key = $this->_braftonOptions->value;
-		
-		// Load the base URL from the options
-		$this->_braftonOptions->load('base-url');
-		$API_BaseURL = $this->_braftonOptions->value;
-		
-		// Get a new feed handler
-		$this->feed = new ApiHandler($API_Key, $API_BaseURL);
-		
-		JLog::addLogger(array());
-	}
-	
+class BraftonArticlesModelCategories extends BraftonArticlesModelParent
+{	
 	// getCategories gets the categories from the XML feed and set it in the database.
 	public function getCategories()
 	{
@@ -101,3 +71,4 @@ class BraftonArticlesModelCategories extends JModelList
 		return true;
 	}
 }
+?>

@@ -36,17 +36,13 @@ class BraftonArticlesModelParent extends JModelList
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_braftonarticles'.DS.'tables');
 		$this->options = $this->getTable('braftonoptions');
 		
-		// Load the API Key from the options
 		$this->options->load('api-key');
 		$API_Key = $this->options->value;
 		
-		// Load the base URL from the options
 		$this->options->load('base-url');
 		$API_BaseURL = $this->options->value;
 		
-		// Get a new feed handler
 		$this->feed = new ApiHandler($API_Key, $API_BaseURL);
 	}
-
 }
 ?>
