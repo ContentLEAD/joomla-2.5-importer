@@ -56,7 +56,8 @@ class plgSystemBraftonCron extends JPlugin
 				try
 				{
 					$controller->execute('loadCategories');
-					$controller->execute('updateArticles');
+					if ($this->updateArticlesEnabled())
+						$controller->execute('updateArticles');
 					$controller->execute('loadArticles');
 				}
 				catch (Exception $ex)
@@ -78,5 +79,18 @@ class plgSystemBraftonCron extends JPlugin
 				$db->query();
 			} 
 		} 
-	} 
+	}
+	
+	private function updateArticlesEnabled()
+	{
+		$db = JFactory::getDbo();
+		$q = $db->getQuery(true);
+		
+		$q->select($q->qn('value'))->from('#__brafton_options')->where($q->qn('option') . ' = ' . $q->q('update-articles'));
+		
+		$db->setQuery($q);
+		$result = $db->loadResult();
+		
+		return $result == 'On';
+	}
 }
