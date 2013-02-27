@@ -35,6 +35,45 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
 	}
 	
+	function purge_content_listing()
+	{
+		JLog::add('Purging brafton_content table.', JLog::DEBUG, 'com_braftonarticles');
+		
+		$db = JFactory::getDbo();
+		
+		$installSql = JPATH_ADMINISTRATOR . '/components/com_braftonarticles/sql/install.mysql.utf8.sql';
+		$sql = JFile::read($installSql);
+		$msg = '';
+		$msgType = 'message';
+		
+		if ($sql)
+		{
+			$db->transactionStart();
+			$db->dropTable('#__brafton_content');
+			$db->setQuery($sql);
+			if ($db->queryBatch())
+			{
+				$msg = 'Content listing purged.';
+				$db->transactionCommit();
+			}
+			else
+			{
+				$msg = 'Content listing could not be purged.';
+				$msgType = 'error';
+				JLog::add(sprintf('Error: Could not execute SQL: [%d] %s', $db->getErrorNum(), $db->getErrorMsg()), JLog::ERROR, 'com_braftonarticles');
+				$db->transactionRollback();
+			}
+		}
+		else
+		{
+			$msg = 'Could not load installation SQL.';
+			$msgType = 'error';
+			JLog::add('Error: Could not load installation SQL.', JLog::ERROR, 'com_braftonarticles');
+		}
+		
+		$this->setRedirect('index.php?option=com_braftonarticles', $msg, $msgType);
+	}
+	
 	function sync_categories()
 	{
 		JLog::add('Starting category sync.', JLog::DEBUG, 'com_braftonarticles');
