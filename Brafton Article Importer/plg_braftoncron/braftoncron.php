@@ -57,11 +57,12 @@ class plgSystemBraftonCron extends JPlugin
 				try
 				{
 					$controller->execute('loadCategories');
+					$controller->execute('updateArticles');
 					$controller->execute('loadArticles');
 				}
 				catch (Exception $ex)
 				{
-					JLog::add(sprintf('FATAL: Uncaught exception: %s. Stack Trace: ' . "\n" . '%s', $ex->getMessage(), $ex->getTraceAsString()), JLog::ERROR, 'com_braftonarticles');
+					JLog::add(sprintf('FATAL: Uncaught exception: %s. Stack Trace: ' . "\n" . '%s', $ex->getMessage(), $ex->getTraceAsString()), JLog::CRITICAL, 'com_braftonarticles');
 				}
 				
 				$db	= JFactory::getDbo();

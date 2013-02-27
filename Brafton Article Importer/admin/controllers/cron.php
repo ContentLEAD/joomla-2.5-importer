@@ -44,6 +44,16 @@ class BraftonArticlesControllerCron extends JController
 			return true;
 		}
 	}
+	
+	function updateArticles()
+	{
+		$model = $this->getModel('articles');
+		if(!$model->updateArticles()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	function loadPictures()
 	{
