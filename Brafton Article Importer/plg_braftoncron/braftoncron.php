@@ -14,7 +14,6 @@ class plgSystemBraftonCron extends JPlugin
 		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
 		
 		$this->plugin = JPluginHelper::getPlugin('system', 'braftoncron');
-		$this->params = new JInput();
 		$this->params->get('params');
 		
 		$this->interval	= ((int)$this->params->get('interval', 5)) * 60;

@@ -19,13 +19,7 @@ class BraftonArticlesControllerCron extends JController
 		JRequest::setVar('view', JRequest::getCmd('view','Options'));
 		parent::display($cachable);
 	}
-
-	/*
-		loadArticles() - REQUIRED FOR BRAFTON ARTICLE IMPORTER
-		This grabs the model code and starts the import of the articles
-		NOTE: This is just the articles, for pictures see below.
-		TODO: Error checking. possible redirect?
-	*/
+	
 	function loadCategories()
 	{
 		$model = $this->getModel('categories');
@@ -35,6 +29,7 @@ class BraftonArticlesControllerCron extends JController
 			return true;
 		}
 	}
+	
 	function loadArticles()
 	{
 		$model = $this->getModel('articles');
@@ -49,16 +44,6 @@ class BraftonArticlesControllerCron extends JController
 	{
 		$model = $this->getModel('articles');
 		if(!$model->updateArticles()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	function loadPictures()
-	{
-		$model = $this->getModel('pictures');
-		if(!$model->getPictures()) {
 			return false;
 		} else {
 			return true;
