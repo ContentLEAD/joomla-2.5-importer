@@ -15,8 +15,32 @@ class XMLHandler {
 	 * @return XMLHandler
 	 */
 	function __construct($url){
+		$allowUrlFopenAvailable = ini_get('allow_url_fopen') == "1" || ini_get('allow_url_fopen') == "On";
+		$cUrlAvailable = function_exists('curl_version');
+		
+		if (!$allowUrlFopenAvailable && !$cUrlAvailable)
+		{
+			$report = implode(", ", array(sprintf("allow_url_fopen is %s", ($allowUrlFopenAvailable ? "On" : "Off")), sprintf("cURL is %s", ($cUrlAvailable ? "enabled" : "disabled"))));
+			throw new Exception(sprintf("No feed loading mechanism available - PHP reported %s", $report), "");
+		}
+		
 		$this->doc = new DOMDocument();
-		if(!@$this->doc->load($url)) throw new XMLLoadException($url);
+		
+		if ($allowUrlFopenAvailable)
+		{
+			if(!@$this->doc->load($url)) throw new XMLLoadException('(allow_url_fopen method) ' . $url);
+		}
+		else if ($cUrlAvailable)
+		{
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			
+			$xml = curl_exec($ch);
+			curl_close($ch);
+			
+			if (!@$this->doc->loadXML($xml)) throw new XMLLoadException('(cURL method) ' . $url);
+		}
 	}
 
 	/**
