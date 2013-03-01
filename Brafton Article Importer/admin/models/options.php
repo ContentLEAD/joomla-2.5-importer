@@ -22,7 +22,6 @@ class BraftonArticlesModelOptions extends JModelList
 	// Called from the options sub-controller
 	function setOptions() {
 		
-		// Set all needed variables
 		$API_pattern = "[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}";
 		$baseURL_pattern = "^(http:\/\/)?api\.[^.]*\.(com|com\.au|co\.uk)\/";
 		$options = JRequest::get('post');
@@ -36,11 +35,9 @@ class BraftonArticlesModelOptions extends JModelList
 			return;
 		}
 		
-		/* Push in the key, bust not before some checking... */
 		// Scrub the key
 		$apiKey[0] = trim(stripslashes($apiKey[0]), '/');
 		
-		// Lookin good, let's push this in
 		$APIKeyData['option'] = "api-key";
 		$APIKeyData['value'] = $apiKey[0];
 		if(!$this->optionsTable->save($APIKeyData)) {
@@ -73,6 +70,13 @@ class BraftonArticlesModelOptions extends JModelList
 		$publishedStateData['option'] = 'published-state';
 		$publishedStateData['value'] = $options['published-state'];
 		if(!$this->optionsTable->save($publishedStateData)) {
+			JError::raiseError(500, $this->optionsTable->getError());
+			return;
+		}
+		
+		$updateArticlesData['option'] = 'update-articles';
+		$updateArticlesData['value'] = $options['update-articles'];
+		if(!$this->optionsTable->save($updateArticlesData)) {
 			JError::raiseError(500, $this->optionsTable->getError());
 			return;
 		}
@@ -125,4 +129,10 @@ class BraftonArticlesModelOptions extends JModelList
 		return $this->optionsTable->value;
 	}
 	
+	function getUpdateArticles() {
+		$this->optionsTable->load('update-articles');
+		return $this->optionsTable->value;
+	}
+	
 } // end class
+?>

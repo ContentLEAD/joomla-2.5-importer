@@ -20,4 +20,4 @@ CREATE TABLE IF NOT EXISTS `#__brafton_options` (
    PRIMARY KEY  (`option`)
 );
 
-INSERT IGNORE INTO  `#__brafton_options` (`option`,`value`) VALUES ('api-key',  ''), ('base-url',  ''), ('author', ''), ('import-order', ''), ('published-state', '');
+INSERT IGNORE INTO  `#__brafton_options` (`option`,`value`) VALUES ('api-key',  ''), ('base-url',  ''), ('author', ''), ('import-order', ''), ('published-state', ''), ('update-articles', '');

@@ -14,7 +14,6 @@ class plgSystemBraftonCron extends JPlugin
 		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
 		
 		$this->plugin = JPluginHelper::getPlugin('system', 'braftoncron');
-		$this->params = new JInput();
 		$this->params->get('params');
 		
 		$this->interval	= ((int)$this->params->get('interval', 5)) * 60;
@@ -57,11 +56,13 @@ class plgSystemBraftonCron extends JPlugin
 				try
 				{
 					$controller->execute('loadCategories');
+					if ($this->updateArticlesEnabled())
+						$controller->execute('updateArticles');
 					$controller->execute('loadArticles');
 				}
 				catch (Exception $ex)
 				{
-					JLog::add(sprintf('FATAL: Uncaught exception: %s. Stack Trace: ' . "\n" . '%s', $ex->getMessage(), $ex->getTraceAsString()), JLog::ERROR, 'com_braftonarticles');
+					JLog::add(sprintf('FATAL: Uncaught exception: %s. Stack Trace: ' . "\n" . '%s', $ex->getMessage(), $ex->getTraceAsString()), JLog::CRITICAL, 'com_braftonarticles');
 				}
 				
 				$db	= JFactory::getDbo();
@@ -78,5 +79,18 @@ class plgSystemBraftonCron extends JPlugin
 				$db->query();
 			} 
 		} 
-	} 
+	}
+	
+	private function updateArticlesEnabled()
+	{
+		$db = JFactory::getDbo();
+		$q = $db->getQuery(true);
+		
+		$q->select($q->qn('value'))->from('#__brafton_options')->where($q->qn('option') . ' = ' . $q->q('update-articles'));
+		
+		$db->setQuery($q);
+		$result = $db->loadResult();
+		
+		return $result == 'On';
+	}
 }

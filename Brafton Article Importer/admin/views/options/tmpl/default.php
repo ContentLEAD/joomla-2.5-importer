@@ -73,6 +73,30 @@ JHTML::_('behavior.tooltip');
 			<h3>
 			<?php
 				echo JHTML::tooltip(
+					'If set to On, articles that are updated in the feed will be reflected on the site.',
+					'Apply Article Updates',
+					'',
+					'Apply Article Updates');
+			?>
+			</h3>
+			<select name="update-articles">
+				<?php
+					$opts = array('On', 'Off');
+					foreach ($opts as $o) : ?>
+					<option 
+						<?php if ($this->updateArticles == $o) : ?>
+							selected="selected"
+						<?php endif; ?>
+					value="<?php echo $o; ?>"><?php echo $o; ?>
+				</option>
+				<?php endforeach; ?>
+			</select>
+		</div>
+		
+		<div class="setting">
+			<h3>
+			<?php
+				echo JHTML::tooltip(
 					'The article\'s Create Date is set based on this setting.',
 					'Article Date',
 					'',

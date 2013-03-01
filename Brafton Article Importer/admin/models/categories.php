@@ -39,7 +39,7 @@ class BraftonArticlesModelCategories extends BraftonArticlesModelParent
 				$categoryRow->setLocation(1, 'last-child'); /* sets up the category in the tree */
 				
 				if (!$categoryRow->check() || !$categoryRow->store(true))
-					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR);
+					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR, 'com_braftonarticles');
 				else
 					$categoryRow->rebuildPath($categoryRow->id);
 				
