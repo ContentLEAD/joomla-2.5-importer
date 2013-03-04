@@ -29,8 +29,7 @@ class BraftonArticlesViewOptions extends JView
 		JToolBarHelper::cancel('options.cancel');
 		JToolBarHelper::divider();
 		$toolbar->appendButton('Confirm', 'This will build the importing category structure from scratch! Are you sure you want to do this?', 'refresh', 'Sync Categories', 'devtools.sync_categories', false);
-		JToolBarHelper::divider();
-		$toolbar->appendButton('Confirm', 'This will entirely purge the content listing. This may have severe consequences and is irreversible! Are you sure you want to do this?', 'purge', 'Purge Content Listing', 'devtools.purge_content_listing', false);
+		$toolbar->appendButton('Confirm', 'This will attempt to rebuild the listing of loaded Brafton content. This may have severe consequences and is irreversible! Are you sure you want to do this?', 'purge', 'Rebuild Content Listing', 'devtools.rebuild_content_listing', false);
 		
 		$this->api_key = $this->get('APIKey');
 		$this->base_url = $this->get('BaseURL');
