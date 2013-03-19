@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="1.6.0" method="upgrade">
+<extension type="component" version="2.5" method="upgrade">
 	<name>Brafton Articles</name>
 	<creationDate>August 2012</creationDate>
 	<author>ContentLEAD</author>
@@ -7,7 +7,7 @@
 	<authorUrl>http://www.contentlead.com</authorUrl>
 	<copyright>Copyright 2012</copyright>
 	<license>GPL</license>
-	<version>0.7</version>
+	<version>0.7.dev</version>
 	<description>Imports articles from Brafton/ContentLEAD/Castleford XML feeds</description>
 	<scriptfile>com_braftonarticles.script.php</scriptfile>
  
@@ -45,23 +45,19 @@
 			<folder>sql</folder>
 			<folder>tables</folder>
 			<folder>models</folder>
-			<!-- views files section -->
 			<folder>views</folder>
+			<folder>language</folder>
 		</files>
-	<languages folder="admin">
-		<language tag="en-GB">language/en-GB/en-GB.com_braftonarticles.ini</language>
-	</languages>		
+		
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB/en-GB.com_braftonarticles.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_braftonarticles.sys.ini</language>
+		</languages>
 	</administration>
-	
-	<!-- UPDATESERVER DEFINITION -->
-    <updateservers>
-		<server type="extension" priority="1" name="Article Importer Update Site">http://tech.contentlead.com/joomla/updates/2.5/update.xml</server>
-    </updateservers>
 	
 	<!-- Media folder for component, contains logos and stuff -->
 	<media destination="com_braftonarticles">
 		<folder>css</folder>
 		<folder>images</folder>
 	</media>
-		
 </extension>
