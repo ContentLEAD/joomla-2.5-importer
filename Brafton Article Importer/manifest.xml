@@ -36,7 +36,7 @@
 	</files>
  
 	<administration>
-		<menu>COM_BRAFTONARTICLES</menu>
+		<menu img="../media/com_braftonarticles/images/logo-16x16.png">COM_BRAFTONARTICLES</menu>
 		<files folder="admin">
 			<filename>index.html</filename>
 			<filename>braftonarticles.php</filename>
@@ -55,7 +55,6 @@
 		</languages>
 	</administration>
 	
-	<!-- Media folder for component, contains logos and stuff -->
 	<media destination="com_braftonarticles">
 		<folder>css</folder>
 		<folder>images</folder>
