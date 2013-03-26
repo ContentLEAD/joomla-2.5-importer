@@ -67,7 +67,7 @@ JHTML::_('behavior.tooltip');
 </div>
 
 <fieldset>
-	<legend><h2>Advanced</h2> (<a href="#" onclick="$$('div#brafton-advanced-opts').toggle();">Show/Hide</a>)</legend>
+	<legend><h2>Advanced</h2> (<a href="javascript:void(0)" onclick="$$('div#brafton-advanced-opts').toggle();">Show/Hide</a>)</legend>
 	<div id="brafton-advanced-opts" style="display: none;">
 		<div class="setting">
 			<h3>
