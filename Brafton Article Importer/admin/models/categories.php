@@ -30,8 +30,8 @@ class BraftonArticlesModelCategories extends BraftonArticlesModelParent
 					'language' =>		'*',
 					'level' =>			1,
 					'parent_id' =>		1,
-					'params' =>			'{"target":"","image":""}',
-					'metadata' =>		'{"page_title":"","author":"","robots":""}',
+					'params' =>			'{"category_layout":"","image":""}',
+					'metadata' =>		'{"author":"","robots":"noindex, follow"}',
 					'access' =>			1
 				);
 				
