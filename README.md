@@ -37,7 +37,8 @@ These settings are optional. Care should be taken when undergoing modifications.
     - Created Date: Date the article was started
     - Published Date: Date the article was approved
     - Last Modified Date: Date the article was last edited
-- **Published Status**: Inital published status of the imported article. Articles will be immediately posted if this is set to Published.
+- **Published Status**: Initial published status of the imported article. Articles will be immediately posted if this is set to Published.
+- **Parent Category**: Parent category for imported categories. Useful for automatically posting articles to a Category Blog.
 
 ### Plugin Configuration ###
 Within your Joomla administrator section, the list of installed plugins can be found under **Extensions** > **Plugin Manager**. The Brafton Cron Plugin is listed under **System - Brafton Cron Plugin**.
