@@ -1,0 +1,1 @@
+INSERT IGNORE INTO #__brafton_options (`option`, `value`) VALUES ('parent-category', 1)
