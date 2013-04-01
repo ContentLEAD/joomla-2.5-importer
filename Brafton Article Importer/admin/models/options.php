@@ -81,6 +81,13 @@ class BraftonArticlesModelOptions extends JModelList
 			return;
 		}
 		
+		$updateArticlesData['option'] = 'parent-category';
+		$updateArticlesData['value'] = $options['parent-category'];
+		if(!$this->optionsTable->save($updateArticlesData)) {
+			JError::raiseError(500, $this->optionsTable->getError());
+			return;
+		}
+		
 		JFactory::getApplication()->enqueueMessage('Your options have successfully been saved.  Please note that your articles will not import until you have activated the <a href="index.php?option=com_plugins">bundled cron plugin</a>.');
 	}
 	
@@ -131,6 +138,11 @@ class BraftonArticlesModelOptions extends JModelList
 	
 	function getUpdateArticles() {
 		$this->optionsTable->load('update-articles');
+		return $this->optionsTable->value;
+	}
+	
+	function getParentCategory() {
+		$this->optionsTable->load('parent-category');
 		return $this->optionsTable->value;
 	}
 	

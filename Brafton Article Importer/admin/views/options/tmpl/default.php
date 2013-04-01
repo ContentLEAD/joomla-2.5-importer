@@ -3,6 +3,7 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 ?>
+
 <form action="index.php?option=com_braftonarticles" method="post" name="adminForm">
 <div id="brafton-standard-opts">
 	<h2>Settings</h2>
@@ -67,7 +68,7 @@ JHTML::_('behavior.tooltip');
 </div>
 
 <fieldset>
-	<legend><h2>Advanced</h2> (<a href="#" onclick="$$('div#brafton-advanced-opts').toggle();">Show/Hide</a>)</legend>
+	<legend><h2>Advanced</h2> (<a href="javascript:void(0)" onclick="$$('div#brafton-advanced-opts').toggle();">Show/Hide</a>)</legend>
 	<div id="brafton-advanced-opts" style="display: none;">
 		<div class="setting">
 			<h3>
@@ -136,6 +137,28 @@ JHTML::_('behavior.tooltip');
 							selected="selected"
 						<?php endif; ?>
 					value="<?php echo $o; ?>"><?php echo $o; ?>
+				<?php endforeach; ?>
+			</select>
+		</div>
+		
+		<div class="setting">
+			<h3>
+			<?php
+				echo JHTML::tooltip(
+					'Parent of imported categories.',
+					'Parent Category',
+					'',
+					'Parent Category');
+			?>
+			</h3>
+			<select name="parent-category">
+				<?php
+					foreach ($this->categoryList as $id => $o) : ?>
+					<option 
+						<?php if ($this->parentCategory == $id) : ?>
+							selected="selected"
+						<?php endif; ?>
+					value="<?php echo $id; ?>"><?php echo $o; ?>
 				<?php endforeach; ?>
 			</select>
 		</div>

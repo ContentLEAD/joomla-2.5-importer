@@ -9,8 +9,7 @@ jimport('joomla.database.table');
 jimport('joomla.log.log');
 
 class BraftonArticlesModelCategories extends BraftonArticlesModelParent
-{	
-	// getCategories gets the categories from the XML feed and set it in the database.
+{
 	public function getCategories()
 	{
 		$categoryList = $this->feed->getCategoryDefinitions();
@@ -22,29 +21,40 @@ class BraftonArticlesModelCategories extends BraftonArticlesModelParent
 			
 			if (!$this->category_exists($category, $brCategoryRow))
 			{
+				$this->options->load('parent-category');
+				$parentId = $this->options->value;
+				
+				// it's a little awkward using the same model for loading and saving in the same pass.
+				// todo: use the dbo for loads/checks as part of the model rewrite
+				if (!$categoryRow->load($parentId))
+				{
+					// if we can't insert under the parent, keep the tree intact. insert under root.
+					JLog::add(sprintf('Warning: No parent category match for id %d.', $parentId), JLog::WARNING, 'com_braftonarticles');
+					$parentId = 1;
+				}
+				
 				$categoryData = array(
 					'title' =>			trim($category->getName()),
 					'alias' =>			strtolower(trim($category->getName())), /* check() handles slugification */
 					'extension' =>		'com_content',
 					'published' =>		1,
 					'language' =>		'*',
-					'level' =>			1,
-					'parent_id' =>		1,
-					'params' =>			'{"target":"","image":""}',
-					'metadata' =>		'{"page_title":"","author":"","robots":""}',
+					'params' =>			'{"category_layout":"","image":""}',
+					'metadata' =>		'{"author":"","robots":"noindex, follow"}',
 					'access' =>			1
 				);
 				
-				$categoryRow->bind($categoryData);
-				$categoryRow->setLocation(1, 'last-child'); /* sets up the category in the tree */
+				$categoryRow = JTable::getInstance('Category');
 				
-				if (!$categoryRow->check() || !$categoryRow->store(true))
-					JLog::add(sprintf('Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR, 'com_braftonarticles');
-				else
-					$categoryRow->rebuildPath($categoryRow->id);
+				if (!$categoryRow->setLocation($parentId, 'last-child') || !$categoryRow->save($categoryData))
+				{
+					// if all our failsafes have failed then this category is no good.
+					// don't save; we'll get downstream notices for support/debug.
+					JLog::add(sprintf('Error: Unable to add category %s - %s', $category->getName(), $categoryRow->getError()), JLog::ERROR, 'com_braftonarticles');
+					continue;
+				}
 				
 				$brCategoryData['id'] = null;
-				// Since $categoryRow now contains the data from the last insert, we can use this id to our advantage
 				$brCategoryData['cat_id'] = $categoryRow->id;
 				$brCategoryData['brafton_cat_id'] = (int) $category->getId();
 				$brCategoryRow->save($brCategoryData);
