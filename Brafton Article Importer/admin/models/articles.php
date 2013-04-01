@@ -230,6 +230,12 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 		if (!in_array('language', $ignore))
 			$data['language'] = '*';
 		
+		if (!in_array('metakey', $ignore))
+			$data['metakey'] = trim($article->getHtmlMetaKeywords());
+		
+		if (!in_array('metadesc', $ignore))
+			$data['metadesc'] = trim($article->getHtmlMetaDescription());
+		
 		return $data;
 	}
 	

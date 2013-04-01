@@ -17,10 +17,10 @@ class com_braftonarticlesInstallerScript
 		$v = new JVersion();
 		$joomlaVersion = $v->getShortVersion();
 		
-		if (version_compare($joomlaVersion, '2.5', 'lt') || version_compare($joomlaVersion, '3.0', 'gte'))
+		if (version_compare($joomlaVersion, '1.7', 'lt') || version_compare($joomlaVersion, '3.0', 'gte'))
 		{
 			$app = JFactory::getApplication();
-			$app->enqueueMessage(sprintf('%s failed: This component requires Joomla 2.5.', ucfirst($type)), 'error');
+			$app->enqueueMessage(sprintf('%s failed: Incompatible version of Joomla.', ucfirst($type)), 'error');
 			return false;
 		}
 	}

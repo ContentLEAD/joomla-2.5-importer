@@ -2,8 +2,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
  
-// import Joomla view library
 jimport('joomla.application.component.view');
+jimport('joomla.application.categories');
  
 /**
  * Options View
@@ -15,6 +15,9 @@ class BraftonArticlesViewOptions extends JView
 	protected $importOrder;
 	protected $publishedState;
 	protected $updateArticles;
+	protected $parentCategory;
+	
+	protected $categoryList;
 	
 	function display($tpl = null)
 	{
@@ -35,8 +38,28 @@ class BraftonArticlesViewOptions extends JView
 		$this->importOrder = $this->get('ImportOrder');
 		$this->publishedState = $this->get('PublishedState');
 		$this->updateArticles = $this->get('UpdateArticles');
+		$this->parentCategory = $this->get('ParentCategory');
+		
+		$this->categoryList = array();
+		$cats = JCategories::getInstance('Content');
+		$this->populateCategoryList($cats->get('root'), 0);
 		
 		parent::display($tpl);
+	}
+	
+	private function populateCategoryList($catTree, $level)
+	{
+		if (empty($catTree))
+			return;
+		
+		// special case for the root
+		if ($level == 0)
+			$this->categoryList[1] = 'None (Root)';
+		else
+			$this->categoryList[$catTree->id] = str_repeat('- ', $level) . ' ' . $catTree->title;
+		
+		foreach ($catTree->getChildren() as $c)
+			$this->populateCategoryList($c, $level + 1);
 	}
 }
 ?>
