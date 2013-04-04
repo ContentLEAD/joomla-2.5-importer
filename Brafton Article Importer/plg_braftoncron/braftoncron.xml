@@ -6,7 +6,7 @@
 	<license>GPL 2.0</license>
 	<authorEmail>techsupport@contentlead.com</authorEmail>
 	<authorUrl>http://www.contentlead.com/</authorUrl>
-	<version>0.1.2</version>
+	<version>0.2.0.dev</version>
 	<description>A pseudo cron event plugin that fires our article importer when a page is hit and what interval the cron is set at.  Based on the Feed Gator pseudo cron plugin</description>
 	<files>
 		<filename plugin="braftoncron">braftoncron.php</filename>

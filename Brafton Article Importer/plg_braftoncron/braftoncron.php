@@ -3,6 +3,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.plugin.plugin' );
 jimport( 'joomla.html.parameter' );
 jimport('joomla.log.log');
+jimport('joomla.database.table');
 
 class plgSystemBraftonCron extends JPlugin
 {
@@ -19,6 +20,64 @@ class plgSystemBraftonCron extends JPlugin
 		$this->interval	= ((int)$this->params->get('interval', 5)) * 60;
 		if ($this->interval < 300)
 			$this->interval = 300;
+	}
+	
+	function onBeforeRender()
+	{	
+		$app = JFactory::getApplication();
+		// we should be on the site, not in edit mode, and viewing a single article.
+		if ($app->isAdmin() || JRequest::getCmd('task') == 'edit' || JRequest::getCmd('layout') == 'edit' || !(JRequest::getCmd('option') == 'com_content' && JRequest::getCmd('view') == 'article'))
+			return;
+		
+		JTable::addIncludePath(JPATH_ROOT . '/libraries/joomla/database/table');
+		$article = JTable::getInstance('content');
+		$articleId = JRequest::getVar('id');
+		$article->load($articleId);
+		
+		$tags = array('title', 'type', 'url');
+		$og = $this->generateOpenGraphTags($tags, $article);
+		
+		$doc = JFactory::getDocument();
+		foreach ($og as $property => $tag)
+			$doc->addCustomTag($tag);
+	}
+	
+	private function generateOpenGraphTags($tagList, $article = null, $prefix = 'og:')
+	{
+		if (!is_array($tagList) || empty($tagList) || $article == null)
+			return array();
+		
+		$ogTags = array();
+		
+		foreach ($tagList as $t)
+		{
+			$tag = strtolower($t);
+			
+			switch ($tag)
+			{
+				case 'title':
+					$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, $article->title);
+					break;
+				
+				case 'type':
+					$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, 'article');
+					break;
+				
+				case 'url':
+					$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, JURI::current());
+					break;
+				
+				default:
+					break;
+			}
+		}
+		
+		return $ogTags;
+	}
+	
+	private function createOpenGraphTag($property, $content)
+	{
+		return sprintf('<meta property="%s" content="%s" />', $property, htmlspecialchars($content));
 	}
 
 	function onAfterRoute()
