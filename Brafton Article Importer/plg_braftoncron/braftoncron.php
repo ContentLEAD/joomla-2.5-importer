@@ -34,12 +34,13 @@ class plgSystemBraftonCron extends JPlugin
 		$articleId = JRequest::getVar('id');
 		$article->load($articleId);
 		
-		$tags = array('title', 'type', 'url');
+		$tags = array('title', 'type', 'url', 'image');
 		$og = $this->generateOpenGraphTags($tags, $article);
 		
 		$doc = JFactory::getDocument();
 		foreach ($og as $property => $tag)
-			$doc->addCustomTag($tag);
+			if ($tag != null)
+				$doc->addCustomTag($tag);
 	}
 	
 	private function generateOpenGraphTags($tagList, $article = null, $prefix = 'og:')
@@ -67,12 +68,39 @@ class plgSystemBraftonCron extends JPlugin
 					$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, JURI::current());
 					break;
 				
+				case 'image':
+					$imageUrl = $this->findImageUrl($article);
+					if ($imageUrl)
+						$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, $imageUrl);
+					else
+						$ogTags[$t] = null;
+					break;
+				
 				default:
 					break;
 			}
 		}
 		
 		return $ogTags;
+	}
+	
+	private function findImageUrl($article)
+	{
+		// for now, let's scrape the URL out of the image tag if they exist - custom fields later.
+		$matches = array();
+		$success = preg_match('/<img src="(.*?)"/', $article->fulltext, $matches);
+		
+		if (!$success)
+			return false;
+		$imageUrl = $matches[1];
+		
+		$juri = JURI::getInstance();
+		$port = $juri->getPort();
+		return $juri->getScheme() . '://' . $juri->getHost() . ($port != '80' ? $port : '') . $imageUrl;
+	}
+	
+	private function findImageInText($text)
+	{
 	}
 	
 	private function createOpenGraphTag($property, $content)
