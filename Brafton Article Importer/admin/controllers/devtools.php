@@ -35,114 +35,9 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 		JLog::addLogger(array('text_file' => 'com_braftonarticles.log.php'), JLog::ALL, 'com_braftonarticles');
 	}
 	
-	function rebuild_content_listing()
+	function purge_content_listing()
 	{
-		JLog::add('Rebuilding content listing.', JLog::DEBUG, 'com_braftonarticles');
-		
-		$tableStructures = $this->getTableStructures();
-		
-		if ($tableStructures === false)
-		{
-			JLog::add('Error: Content listing tables not found.', JLog::ERROR, 'com_braftonarticles');
-			$this->setRedirect('index.php?option=com_braftonarticles', 'Content listing was not rebuilt: tables not found.', 'error');
-			return;
-		}
-		
-		$content = $this->getContentListing($tableStructures);
-		
-		if ($this->resetContentListing())
-			$this->saveContentListing($content);
-		
-		JLog::add('Content listing rebuilt.', JLog::INFO, 'com_braftonarticles');
-		$this->setRedirect('index.php?option=com_braftonarticles', 'Content listing rebuilt.', 'message');
-	}
-	
-	private function getTableStructures()
-	{
-		$tableStructures = array();
-		$db = JFactory::getDbo();
-		$prefix = $db->getPrefix();
-		$allTables = $db->getTableList();
-		
-		if (in_array($prefix . 'brafton', $allTables))
-			$tableStructures[] = '1.5';
-		
-		if (in_array($prefix . 'brafton_content', $allTables))
-			$tableStructures[] = '2.5';
-		
-		if (empty($tableStructures))
-			return false;
-		
-		return $tableStructures;
-	}
-	
-	private function saveContentListing($content)
-	{
-		if (empty($content))
-			return;
-		
-		$count = 0;
-		$db = JFactory::getDbo();
-		
-		foreach ($content as $row)
-		{
-			$q = $db->getQuery(true);
-			$q->insert('#__brafton_content')->columns('brafton_content_id', 'content_id');
-			$q->values($row[0] . ', ' . $row[1]);
-			
-			$db->setQuery($q);
-			if ($db->query())
-				$count++;
-			else
-				JLog::add(sprintf('Notice: Could not migrate row (content ID: %d, Brafton ID: %d): [%d] %s', $row[1], $row[0], $db->getErrorNum(), $db->getErrorMsg()), JLog::NOTICE, 'com_braftonarticles');
-		}
-	}
-	
-	private function getContentListing($tableStructures)
-	{
-		$content = array();
-		$db = JFactory::getDbo();
-		
-		foreach ($tableStructures as $struc)
-		{
-			$tableName = '';
-			$contentIdColumn = '';
-			$brafIdColumn = '';
-			
-			switch ($struc)
-			{
-				case '1.5':
-					$tableName = '#__brafton';
-					$contentIdColumn = 'id';
-					$brafIdColumn = 'brafton_id';
-					break;
-				
-				case '2.5':
-					$tableName = '#__brafton_content';
-					$contentIdColumn = 'content_id';
-					$brafIdColumn = 'brafton_content_id';
-					break;
-				
-				default:
-					continue;
-			}
-			
-			$q = $db->getQuery(true);
-			$q->select($q->qn($brafIdColumn))->select($q->qn($contentIdColumn));
-			$q->from($tableName);
-			$db->setQuery($q);
-			
-			$rows = $db->loadRowList();
-			foreach ($rows as $brafId => $contentId)
-				$content[$brafId] = $contentId;
-		}
-		
-		return $content;
-	}
-	
-	private function resetContentListing()
-	{
-		JLog::add('Resetting content listing tables.', JLog::DEBUG, 'com_braftonarticles');
+		JLog::add('Purging brafton_content table.', JLog::DEBUG, 'com_braftonarticles');
 		
 		$db = JFactory::getDbo();
 		
@@ -150,19 +45,16 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 		$sql = JFile::read($installSql);
 		$msg = '';
 		$msgType = 'message';
-		$result = false;
 		
 		if ($sql)
 		{
 			$db->transactionStart();
-			$db->dropTable('#__brafton');
 			$db->dropTable('#__brafton_content');
 			$db->setQuery($sql);
 			if ($db->queryBatch())
 			{
+				$msg = 'Content listing purged.';
 				$db->transactionCommit();
-				
-				$result = true;
 			}
 			else
 			{
@@ -170,8 +62,6 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 				$msgType = 'error';
 				JLog::add(sprintf('Error: Could not execute SQL: [%d] %s', $db->getErrorNum(), $db->getErrorMsg()), JLog::ERROR, 'com_braftonarticles');
 				$db->transactionRollback();
-				
-				$result = false;
 			}
 		}
 		else
@@ -179,13 +69,9 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 			$msg = 'Could not load installation SQL.';
 			$msgType = 'error';
 			JLog::add('Error: Could not load installation SQL.', JLog::ERROR, 'com_braftonarticles');
-			
-			$result = false;
 		}
 		
-		if (!$result)
-			$this->setRedirect('index.php?option=com_braftonarticles', $msg, $msgType);
-		return $result;
+		$this->setRedirect('index.php?option=com_braftonarticles', $msg, $msgType);
 	}
 	
 	function sync_categories()
@@ -220,7 +106,7 @@ class BraftonArticlesControllerDevTools extends JControllerAdmin
 			$bCats = JTable::getInstance('BraftonCategories', 'Table');
 			
 			if (!$bCats->save(array('brafton_cat_id' => $fc->getId(), 'cat_id' => $jCatId)))
-				JLog::add(sprintf('Unable to add category %s (%d) - %s', $fc->getName(), $fc->getId(), $bCats->getError()), JLog::ERROR, 'com_braftonarticles');
+				JLog::add(sprintf('Unable to add category %s (%d) - %s', $fc->getName(), $fc->getId(), $bCats->getError()), JLog::ERROR);
 			else
 				$syncCount++;
 		}
