@@ -87,12 +87,13 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 			- created: affects sort, preserve history
 			- publish_up: preserve history
 			- created_by: respect the user's preferences
+			- attribs: respect the user's preferences
 			- language: asking for trouble
 		*/
 		$ignore = array('alias', 'state', 'created', 'publish_up', 'created_by', 'language');
 		$data = $this->convertToContent($article, $contentId, $ignore);
 		
-		if (!$content->save($data, '', $ignore))
+		if (!$content->save($data))
 			return $content->getError();
 		
 		return true;
@@ -235,6 +236,15 @@ class BraftonArticlesModelArticles extends BraftonArticlesModelParent
 		
 		if (!in_array('metadesc', $ignore))
 			$data['metadesc'] = trim($article->getHtmlMetaDescription());
+		
+		if (!in_array('attribs', $ignore))
+			$data['attribs'] = '{"show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}';
+		
+		if (!in_array('access', $ignore))
+			$data['access'] = '1';
+		
+		if (!in_array('metadata', $ignore))
+			$data['metadata'] = '{"robots":"","author":"","rights":"","xreference":""}';
 		
 		return $data;
 	}

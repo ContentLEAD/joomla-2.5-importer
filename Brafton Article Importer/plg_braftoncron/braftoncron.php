@@ -1,8 +1,11 @@
 <?php
-defined( '_JEXEC' ) or die( 'Restricted access' );
-jimport( 'joomla.plugin.plugin' );
-jimport( 'joomla.html.parameter' );
+// No direct access
+defined('_JEXEC') or die('Restricted access');
+
+jimport('joomla.plugin.plugin');
+jimport('joomla.html.parameter');
 jimport('joomla.log.log');
+jimport('joomla.database.table');
 
 class plgSystemBraftonCron extends JPlugin
 {
@@ -19,6 +22,165 @@ class plgSystemBraftonCron extends JPlugin
 		$this->interval	= ((int)$this->params->get('interval', 5)) * 60;
 		if ($this->interval < 300)
 			$this->interval = 300;
+	}
+	
+	function onAfterRender()
+	{
+		if (!$this->isSingleContent())
+			return;
+		
+		$this->appendPrefixAttribute('head', array('og: http://ogp.me/ns#', 'article: http://ogp.me/ns/article#'));
+	}
+	
+	function onBeforeRender()
+	{
+		if (!$this->isSingleContent())
+			return;
+		
+		JTable::addIncludePath(JPATH_ROOT . '/libraries/joomla/database/table');
+		$article = JTable::getInstance('content');
+		$articleId = JRequest::getVar('id');
+		$article->load($articleId);
+		
+		$tags = array('title', 'type', 'url', 'image', 'site_name', 'description');
+		$articleTags = array('published_time');
+		$og = $this->generateOpenGraphTags($tags, $article);
+		$og = array_merge($og, $this->generateOpenGraphTags($articleTags, $article, 'article:'));
+		
+		$doc = JFactory::getDocument();
+		foreach ($og as $property => $tag)
+			if ($tag != null)
+				$doc->addCustomTag($tag);
+	}
+	
+	private function appendPrefixAttribute($tag, $content)
+	{
+		if (empty($tag) || empty($content))
+			return;
+		
+		if (is_array($content))
+			$content = implode(' ', $content);
+		
+		$document = JResponse::getBody();
+		
+		$tagPattern = '/<' . $tag . '(.*?)>/';
+		$matches = array();
+		$success = preg_match($tagPattern, $document, $matches);
+		
+		if (!$success)
+			return;
+		
+		$attribs = array();
+		$a = trim($matches[1]);
+		if (!empty($a))
+			$attribs = explode(' ', $a);
+		
+		$attribs[] = 'prefix="' . $content . '"';
+		$document = preg_replace($tagPattern, '<' . $tag . ' ' . implode(' ', $attribs) . '>', $document);
+		JResponse::setBody($document);
+	}
+	
+	private function isSingleContent()
+	{
+		$app = JFactory::getApplication();
+		// we should be on the site, not in edit mode, and viewing a single article.
+		return !($app->isAdmin() || JRequest::getCmd('task') == 'edit' || JRequest::getCmd('layout') == 'edit' || !(JRequest::getCmd('option') == 'com_content' && JRequest::getCmd('view') == 'article'));
+	}
+	
+	private function generateOpenGraphTags($tagList, $article = null, $prefix = 'og:')
+	{
+		if (!is_array($tagList) || empty($tagList) || $article == null)
+			return array();
+		
+		$ogTags = array();
+		
+		foreach ($tagList as $t)
+		{
+			$tag = strtolower($t);
+			
+			if ($prefix == 'og:')
+			{
+				switch ($tag)
+				{
+					case 'title':
+						$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, $article->title);
+						break;
+					
+					case 'type':
+						$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, 'article');
+						break;
+					
+					case 'url':
+						$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, JURI::current());
+						break;
+					
+					case 'image':
+						$imageUrl = $this->findImageUrl($article);
+						if ($imageUrl)
+							$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, $imageUrl);
+						else
+							$ogTags[$t] = null;
+						break;
+					
+					case 'site_name':
+						$config = JFactory::getConfig();
+						$siteName = $config->getValue('config.sitename');
+						$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, $siteName);
+						break;
+					
+					case 'description':
+						$desc = trim($article->introtext);
+						if (!empty($desc))
+						{
+							$desc = preg_replace('/<.*?>/', '', $desc);
+							$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, $desc);
+						}
+						else
+							$ogTags[$t] = null;
+						break;
+					
+					default:
+						break;
+				}
+			}
+			else if ($prefix == 'article:')
+			{
+				switch ($tag)
+				{
+					case 'published_time':
+						$ogTags[$t] = $this->createOpenGraphTag($prefix . $tag, date('c', strtotime($article->created)));
+						break;
+				}
+			}
+		}
+		
+		return $ogTags;
+	}
+	
+	private function findImageUrl($article)
+	{
+		// for now, let's scrape the URL out of the image tag if they exist - custom fields later.
+		$matches = array();
+		$success = preg_match('/<img src="(.*?)"/', $article->fulltext, $matches);
+		
+		if (!$success)
+			return false;
+		$imageUrl = $matches[1];
+		
+		$juri = JURI::getInstance();
+		$port = $juri->getPort();
+		return $juri->getScheme() . '://' . $juri->getHost() . ($port != '80' ? $port : '') . $imageUrl;
+	}
+	
+	private function findImageInText($text)
+	{
+	}
+	
+	private function createOpenGraphTag($property, $content, $clean = true)
+	{
+		if ($clean === true)
+			$content = trim(htmlspecialchars($content));
+		return sprintf('<meta property="%s" content="%s" />', $property, $content);
 	}
 
 	function onAfterRoute()
@@ -94,3 +256,5 @@ class plgSystemBraftonCron extends JPlugin
 		return $result == 'On';
 	}
 }
+
+?>
