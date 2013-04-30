@@ -176,9 +176,11 @@ class plgSystemBraftonCron extends JPlugin
 	{
 	}
 	
-	private function createOpenGraphTag($property, $content)
+	private function createOpenGraphTag($property, $content, $clean = true)
 	{
-		return sprintf('<meta property="%s" content="%s" />', $property, htmlspecialchars($content));
+		if ($clean === true)
+			$content = trim(htmlspecialchars($content));
+		return sprintf('<meta property="%s" content="%s" />', $property, $content);
 	}
 
 	function onAfterRoute()
